@@ -1,6 +1,8 @@
 # Gemini Chatbot API
 
-FastAPI service for Gemini with a cumulative input + output limit of 2,000 tokens per conversation. Conversations and messages are persisted in SQLite.
+FastAPI service for OLP AI with a cumulative input + output limit of 2,000 conversation tokens. Conversations and messages are persisted in SQLite.
+
+The assistant has a fixed system instruction identifying it as OLP AI, an assistant for answering questions and writing, explaining, reviewing, and debugging code for OLP AI problems. For code requests it gives a short approach explanation before the code and avoids long tutorials unless requested. This instruction is sent separately through Gemini's `system_instruction`, is not saved in conversation history, and is excluded from the local 2,000-token conversation budget.
 
 ## Run
 
@@ -12,6 +14,8 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 OpenAPI documentation: <http://127.0.0.1:8000/api-docs>
+
+Temporary test frontend: <http://127.0.0.1:8000/>
 
 ## Endpoints
 

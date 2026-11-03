@@ -112,7 +112,7 @@ class ChatService:
                 )
 
             try:
-                answer, actual_input, output_tokens = self.gemini.generate(
+                answer, _provider_input_tokens, output_tokens = self.gemini.generate(
                     model_messages,
                     max_output_tokens=remaining - input_tokens,
                 )
@@ -123,7 +123,9 @@ class ChatService:
 
             # Use the count from the response when available, but never allow a bad
             # provider usage value to make the local budget negative.
-            actual_input = actual_input or input_tokens
+            # The fixed system instruction is outside the per-conversation budget.
+            # Count only the conversation contents here, not provider prompt metadata.
+            actual_input = input_tokens
             total_added = actual_input + output_tokens
             if used_tokens + total_added > self.settings.max_conversation_tokens:
                 raise HTTPException(

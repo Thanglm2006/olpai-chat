@@ -8,8 +8,9 @@ from google.genai import types
 
 
 class GeminiService:
-    def __init__(self, api_key: str, model: str) -> None:
+    def __init__(self, api_key: str, model: str, system_instruction: str) -> None:
         self.model = model
+        self.system_instruction = system_instruction
         self._client_lock = RLock()
         self.client = genai.Client(api_key=api_key)
 
@@ -45,6 +46,7 @@ class GeminiService:
                 contents=self._contents(messages),
                 config=types.GenerateContentConfig(
                     max_output_tokens=max_output_tokens,
+                    system_instruction=self.system_instruction,
                 ),
             )
         text = (response.text or "").strip()

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gemini Chat Console</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #6c7680;
+      --line: #dfe5e8;
+      --surface: #ffffff;
+      --canvas: #f3f6f5;
+      --sidebar: #17252b;
+      --sidebar-ink: #e8f0ee;
+      --mint: #b8e4d0;
+      --mint-strong: #1b8a68;
+      --coral: #ef8c6a;
+      --danger: #b84040;
+      --shadow: 0 14px 40px rgba(23, 32, 42, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--canvas);
+      color: var(--ink);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { display: grid; grid-template-columns: 286px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px 18px;
+      background: var(--sidebar);
+      color: var(--sidebar-ink);
+    }
+    .brand { padding: 4px 8px 2px; }
+    .brand-kicker { color: var(--mint); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .brand h1 { margin: 5px 0 0; font-size: 20px; letter-spacing: -.02em; }
+    .new-chat {
+      width: 100%;
+      border: 1px solid rgba(184, 228, 208, .55);
+      border-radius: 7px;
+      padding: 11px 13px;
+      background: var(--mint);
+      color: #173b32;
+      font-weight: 750;
+      text-align: left;
+    }
+    .new-chat:hover { background: #d0f0df; }
+    .side-heading { margin: 5px 8px 7px; color: #9cb0b1; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .conversation-list { display: flex; flex: 1; flex-direction: column; gap: 5px; min-height: 80px; overflow: auto; }
+    .conversation-item {
+      display: block;
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 10px 11px;
+      background: transparent;
+      color: var(--sidebar-ink);
+      text-align: left;
+    }
+    .conversation-item:hover { background: rgba(255, 255, 255, .07); }
+    .conversation-item.active { border-color: rgba(184, 228, 208, .55); background: rgba(184, 228, 208, .13); }
+    .conversation-title { display: block; overflow: hidden; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .conversation-meta { display: block; margin-top: 2px; color: #9cb0b1; font-size: 11px; }
+    .side-links { display: flex; gap: 8px; padding: 0 8px; }
+    .side-links a { color: #b8cfcc; font-size: 12px; text-decoration: none; }
+    .side-links a:hover { color: white; text-decoration: underline; }
+
+    .workspace { display: flex; min-width: 0; flex-direction: column; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 30px;
+      background: var(--surface);
+    }
+    .topbar h2 { margin: 0; font-size: 18px; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint-strong); }
+    .status-dot.error { background: var(--danger); }
+    .content { display: flex; width: min(980px, 100%); flex: 1; flex-direction: column; margin: 0 auto; padding: 28px 30px 22px; }
+    .conversation-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .conversation-head h3 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+    .conversation-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 11px;
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 650;
+    }
+    .button:hover { border-color: #aebbc0; background: #f9fbfa; }
+    .button.danger { color: var(--danger); }
+    .button.primary { border-color: var(--mint-strong); background: var(--mint-strong); color: white; }
+    .button:disabled { cursor: not-allowed; opacity: .5; }
+    .budget { margin-top: 22px; border: 1px solid var(--line); border-radius: 8px; padding: 15px 16px; background: var(--surface); box-shadow: var(--shadow); }
+    .budget-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; color: var(--muted); font-size: 12px; }
+    .budget-row strong { color: var(--ink); font-size: 13px; }
+    .meter { height: 7px; margin-top: 10px; overflow: hidden; border-radius: 99px; background: #e8eeee; }
+    .meter-fill { width: 0; height: 100%; background: var(--coral); transition: width .2s ease; }
+    .messages { display: flex; flex: 1; flex-direction: column; gap: 15px; min-height: 300px; margin: 24px 0; overflow: auto; padding: 2px 2px 8px; }
+    .empty { display: grid; min-height: 260px; place-items: center; border: 1px dashed #cbd6d5; border-radius: 8px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .message { max-width: min(780px, 90%); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
+    .message.user { align-self: flex-end; border-color: #c4e3d5; background: #eaf7f0; }
+    .message.model { align-self: flex-start; }
+    .message-label { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .message-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .composer { display: flex; align-items: flex-end; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--surface); box-shadow: var(--shadow); }
+    .composer textarea { flex: 1; min-height: 46px; max-height: 150px; resize: vertical; border: 0; outline: 0; padding: 8px 4px; background: transparent; color: var(--ink); }
+    .hint { margin: 8px 2px 0; color: var(--muted); font-size: 11px; }
+    .notice { min-height: 20px; margin-top: 10px; color: var(--danger); font-size: 12px; }
+    dialog { width: min(480px, calc(100% - 28px)); border: 1px solid var(--line); border-radius: 8px; padding: 0; box-shadow: 0 24px 70px rgba(23, 32, 42, .22); }
+    dialog::backdrop { background: rgba(23, 32, 42, .38); }
+    .dialog-body { padding: 22px; }
+    .dialog-body h3 { margin: 0 0 5px; }
+    .dialog-body p { margin: 0 0 17px; color: var(--muted); font-size: 13px; }
+    .field { display: grid; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 12px; font-weight: 750; }
+    .field input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px 11px; outline: 0; }
+    .field input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 3px rgba(27, 138, 104, .12); }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    @media (max-width: 720px) {
+      .shell { display: block; }
+      .sidebar { min-height: auto; padding: 16px; }
+      .conversation-list { max-height: 150px; }
+      .topbar, .content { padding: 17px 16px; }
+      .conversation-head { display: block; }
+      .actions { justify-content: flex-start; margin-top: 14px; }
+      .messages { min-height: 260px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-kicker">Temporary console</div>
+        <h1>OLP AI</h1>
+      </div>
+      <button class="new-chat" id="newChat">+ New conversation</button>
+      <div>
+        <div class="side-heading">Conversations</div>
+        <div class="conversation-list" id="conversationList"></div>
+      </div>
+      <div class="side-links">
+        <a href="/api-docs" target="_blank" rel="noreferrer">API docs</a>
+        <a href="/health" target="_blank" rel="noreferrer">Health</a>
+        <a href="#" id="openSettings">Settings</a>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <h2 id="modelName">OLP AI</h2>
+        <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Connecting</span></div>
+      </header>
+      <section class="content">
+        <div class="conversation-head">
+          <div>
+            <h3 id="conversationTitle">New conversation</h3>
+            <p id="conversationId">No conversation selected</p>
+          </div>
+          <div class="actions">
+            <button class="button" id="clearChat" disabled>Clear</button>
+            <button class="button danger" id="deleteChat" disabled>Delete</button>
+          </div>
+        </div>
+
+        <div class="budget">
+          <div class="budget-row"><span>Conversation token budget</span><strong id="tokenCount">0 / 2000</strong></div>
+          <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>
+        </div>
+
+        <form class="composer" id="chatForm">
+          <textarea id="messageInput" placeholder="Write a message..." aria-label="Message"></textarea>
+          <button class="button primary" id="sendButton" type="submit">Send</button>
+        </form>
+        <div class="hint">Enter sends. Shift + Enter adds a new line.</div>
+        <div class="notice" id="notice" role="status"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="settingsDialog">
+    <form class="dialog-body" id="settingsForm" method="dialog">
+      <h3>Update Gemini API key</h3>
+      <p>The key is updated in the single database row. The response is masked.</p>
+      <div class="field"><label for="apiKey">New API key</label><input id="apiKey" type="password" autocomplete="off" required></div>
+      <div class="field"><label for="updatePassword">Update password</label><input id="updatePassword" type="password" autocomplete="off" required></div>
+      <div class="dialog-actions"><button class="button" type="button" id="closeSettings">Cancel</button><button class="button primary" type="submit">Update key</button></div>
+      <div class="notice" id="settingsNotice"></div>
+    </form>
+  </dialog>
+
+  <script>
+    const state = { activeId: null, budget: 2000, model: "Gemini", conversations: [] };
+    const $ = (selector) => document.querySelector(selector);
+    const api = async (url, options = {}) => {
+      const { headers = {}, ...requestOptions } = options;
+      const response = await fetch(url, { ...requestOptions, headers: { "Content-Type": "application/json", ...headers } });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.detail?.message || body.detail || `Request failed (${response.status})`);
+      return body;
+    };
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    const setNotice = (message = "") => { $("#notice").textContent = message; };
+    const formatDate = (value) => value ? new Date(value).toLocaleString() : "";
+
+    function renderConversations() {
+      const list = $("#conversationList");
+      if (!state.conversations.length) { list.innerHTML = '<div style="padding:8px;color:#9cb0b1;font-size:12px">No conversations yet.</div>'; return; }
+      list.innerHTML = state.conversations.map((item) => `
+        <button class="conversation-item ${item.id === state.activeId ? "active" : ""}" data-id="${item.id}">
+          <span class="conversation-title">${escapeHtml(item.title)}</span>
+          <span class="conversation-meta">${item.used_tokens} / ${item.budget_tokens} tokens</span>
+        </button>`).join("");
+      list.querySelectorAll("[data-id]").forEach((button) => button.addEventListener("click", () => selectConversation(button.dataset.id)));
+    }
+
+    function renderConversation(conversation) {
+      state.activeId = conversation.id;
+      $("#conversationTitle").textContent = conversation.title;
+      $("#conversationId").textContent = conversation.id;
+      $("#tokenCount").textContent = `${conversation.used_tokens} / ${conversation.budget_tokens}`;
+      $("#meterFill").style.width = `${Math.min(100, (conversation.used_tokens / conversation.budget_tokens) * 100)}%`;
+      $("#clearChat").disabled = false;
+      $("#deleteChat").disabled = false;
+      $("#messages").innerHTML = conversation.messages.length ? conversation.messages.map((message) => `
+        <article class="message ${message.role === "user" ? "user" : "model"}">
+          <div class="message-label">${message.role === "user" ? "You" : "Gemini"}</div>
+          <div class="message-body">${escapeHtml(message.content)}</div>
+        </article>`).join("") : '<div class="empty"><div><strong>Conversation cleared</strong><span>Send a message to continue.</span></div></div>';
+      $("#messages").scrollTop = $("#messages").scrollHeight;
+      renderConversations();
+    }
+
+    async function refreshConversations() {
+      state.conversations = await api("/api/v1/conversations");
+      renderConversations();
+    }
+
+    async function selectConversation(id) {
+      try { renderConversation(await api(`/api/v1/conversations/${id}`)); setNotice(""); }
+      catch (error) { setNotice(error.message); }
+    }
+
+    async function newConversation() {
+      try { renderConversation(await api("/api/v1/conversations", { method: "POST", body: JSON.stringify({ title: "New conversation" }) })); await refreshConversations(); setNotice(""); }
+      catch (error) { setNotice(error.message); }
+    }
+
+    $("#chatForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const input = $("#messageInput");
+      const message = input.value.trim();
+      if (!message) return;
+      $("#sendButton").disabled = true;
+      setNotice("");
+      try {
+        const result = await api("/api/v1/chat", { method: "POST", body: JSON.stringify({ conversation_id: state.activeId, message }) });
+        input.value = "";
+        renderConversation(result.conversation);
+        await refreshConversations();
+      } catch (error) { setNotice(error.message); }
+      finally { $("#sendButton").disabled = false; input.focus(); }
+    });
+
+    $("#messageInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); $("#chatForm").requestSubmit(); }
+    });
+    $("#newChat").addEventListener("click", newConversation);
+    $("#clearChat").addEventListener("click", async () => {
+      if (!state.activeId || !confirm("Clear this conversation?")) return;
+      try { renderConversation(await api(`/api/v1/conversations/${state.activeId}/messages`, { method: "DELETE" })); await refreshConversations(); }
+      catch (error) { setNotice(error.message); }
+    });
+    $("#deleteChat").addEventListener("click", async () => {
+      if (!state.activeId || !confirm("Delete this conversation?")) return;
+      try { await api(`/api/v1/conversations/${state.activeId}`, { method: "DELETE" }); state.activeId = null; $("#conversationTitle").textContent = "New conversation"; $("#conversationId").textContent = "No conversation selected"; $("#messages").innerHTML = '<div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>'; $("#clearChat").disabled = true; $("#deleteChat").disabled = true; $("#tokenCount").textContent = `0 / ${state.budget}`; $("#meterFill").style.width = "0%"; await refreshConversations(); }
+      catch (error) { setNotice(error.message); }
+    });
+
+    $("#openSettings").addEventListener("click", (event) => { event.preventDefault(); $("#settingsDialog").showModal(); $("#settingsNotice").textContent = ""; });
+    $("#closeSettings").addEventListener("click", () => $("#settingsDialog").close());
+    $("#settingsForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const notice = $("#settingsNotice");
+      try {
+        const result = await api("/api/v1/settings/api-key", { method: "PUT", headers: { "X-API-Key-Password": $("#updatePassword").value }, body: JSON.stringify({ api_key: $("#apiKey").value }) });
+        notice.style.color = "var(--mint-strong)";
+        notice.textContent = `Updated: ${result.masked_api_key}`;
+        $("#apiKey").value = "";
+        $("#updatePassword").value = "";
+      } catch (error) { notice.style.color = "var(--danger)"; notice.textContent = error.message; }
+    });
+
+    async function boot() {
+      try {
+        const config = await api("/api/v1/config");
+        state.budget = config.budget_tokens; state.model = config.model;
+        $("#modelName").textContent = config.model;
+        $("#tokenCount").textContent = `0 / ${state.budget}`;
+        await refreshConversations();
+        $("#statusText").textContent = "Connected";
+      } catch (error) { $("#statusText").textContent = "Offline"; $("#statusDot").classList.add("error"); setNotice(error.message); }
+    }
+    boot();
+  </script>
+</body>
+</html>

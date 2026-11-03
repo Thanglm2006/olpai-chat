@@ -8,6 +8,12 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 
+DEFAULT_SYSTEM_INSTRUCTION = """You are OLP AI, an AI assistant for OLP AI problems.
+Your role is to answer questions clearly and help users design, write, explain, review, and debug code for OLP AI tasks.
+Respond in Vietnamese by default unless the user asks for another language.
+Prefer practical, correct, and concise answers. When providing code, first give only a brief explanation of the approach and key complexity or edge cases, then provide the code. Do not give a long tutorial unless the user asks for one.
+Do not claim to have executed code or accessed data that you have not actually accessed."""
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -18,6 +24,7 @@ class Settings:
     host: str
     port: int
     api_key_update_password: str = ""
+    system_instruction: str = DEFAULT_SYSTEM_INSTRUCTION
 
 
 def get_settings() -> Settings:
@@ -37,6 +44,10 @@ def get_settings() -> Settings:
         host=os.getenv("HOST", "127.0.0.1"),
         port=int(os.getenv("PORT", "8000")),
         api_key_update_password=os.getenv("API_KEY_UPDATE_PASSWORD", "").strip(),
+        system_instruction=(
+            os.getenv("AI_SYSTEM_INSTRUCTION", DEFAULT_SYSTEM_INSTRUCTION).strip()
+            or DEFAULT_SYSTEM_INSTRUCTION
+        ),
     )
 
 

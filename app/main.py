@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 import hmac
+from pathlib import Path
 from uuid import UUID
 
 from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from .config import settings
 from .db import Database
@@ -25,7 +26,11 @@ from .service import ChatService
 
 
 database = Database(settings.database_path)
-gemini = GeminiService(settings.gemini_api_key, settings.gemini_model)
+gemini = GeminiService(
+    settings.gemini_api_key,
+    settings.gemini_model,
+    settings.system_instruction,
+)
 chat_service = ChatService(database, gemini, settings)
 
 
@@ -44,6 +49,11 @@ app = FastAPI(
     description="Chat API with a cumulative 2,000-token input/output budget per conversation.",
     lifespan=lifespan,
 )
+
+
+@app.get("/", include_in_schema=False)
+def frontend():
+    return FileResponse(Path(__file__).parent / "static" / "index.html")
 
 
 @app.get("/api-docs", include_in_schema=False)
