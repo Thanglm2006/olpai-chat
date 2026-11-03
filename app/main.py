@@ -63,7 +63,7 @@ def frontend():
 
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return FileResponse(static_dir / "assets" / "favicon.svg", media_type="image/svg+xml")
+    return FileResponse(static_dir / "assets" / "logo.jpg", media_type="image/jpeg")
 
 
 @app.get("/api-docs", include_in_schema=False)

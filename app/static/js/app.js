@@ -464,7 +464,7 @@
     return `
       <div class="welcome-screen">
         <div class="welcome-logo-emblem">
-          <img src="/static/assets/favicon.svg" alt="OLP'AI'26 Logo">
+          <img src="/static/assets/logo.jpg" alt="OLP'AI'26 Logo">
         </div>
         <div class="welcome-headings">
           <h2>Chào mừng bạn đến với OLP'AI'26</h2>
@@ -531,7 +531,7 @@
                   <div class="model-header-row">
                     <div class="model-author-info">
                       <div class="model-avatar-badge">
-                        <img src="/static/assets/favicon.svg" alt="OLP'AI">
+                        <img src="/static/assets/logo.jpg" alt="OLP'AI">
                       </div>
                       <span class="model-title-text">OLP'AI'26</span>
                       <span class="model-badge-tag">Assistant</span>
@@ -599,7 +599,7 @@
             <div class="model-header-row">
               <div class="model-author-info">
                 <div class="model-avatar-badge">
-                  <img src="/static/assets/favicon.svg" alt="OLP'AI">
+                  <img src="/static/assets/logo.jpg" alt="OLP'AI">
                 </div>
                 <span class="model-title-text">OLP'AI'26</span>
                 <span class="model-badge-tag">Thinking</span>

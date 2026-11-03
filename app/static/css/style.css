@@ -1,5 +1,6 @@
 /* ==========================================================================
    OLP'AI'26 - Advanced Olympiad AI Console Styling
+   Theme: Olympic AI Việt Nam (Royal Azure Blue & Torch Flame Orange)
    ========================================================================== */
 
 :root {
@@ -8,7 +9,7 @@
   --color-surface-hover: #f1f5f9;
   --color-border: #e2e8f0;
   --color-border-subtle: #edf2f7;
-  --color-border-focus: #10b981;
+  --color-border-focus: #0284c7;
 
   /* Typography */
   --color-ink-primary: #0f172a;
@@ -16,37 +17,39 @@
   --color-ink-muted: #64748b;
   --color-ink-subtle: #94a3b8;
 
-  /* Brand Accents */
-  --color-brand-primary: #10b981;
-  --color-brand-glow: #34d399;
-  --color-brand-dark: #059669;
+  /* Brand Accents (Olympic AI Torch Palette) */
+  --color-brand-primary: #0284c7;
+  --color-brand-glow: #38bdf8;
+  --color-brand-dark: #0369a1;
+  --color-brand-flame: #ea580c;
+  --color-brand-flame-light: #f97316;
   --color-brand-cyan: #06b6d4;
   --color-brand-indigo: #6366f1;
   --color-brand-amber: #f59e0b;
   --color-brand-danger: #ef4444;
 
-  /* Sidebar Theme (Deep Obsidian Tech) */
-  --color-side-bg: #0b1216;
-  --color-side-footer: #080d10;
-  --color-side-card: #131d23;
-  --color-side-card-hover: rgba(255, 255, 255, 0.06);
-  --color-side-card-active: rgba(16, 185, 129, 0.12);
+  /* Sidebar Theme (Deep Olympic Navy) */
+  --color-side-bg: #091322;
+  --color-side-footer: #060d19;
+  --color-side-card: #102038;
+  --color-side-card-hover: rgba(255, 255, 255, 0.07);
+  --color-side-card-active: rgba(2, 132, 199, 0.18);
   --color-side-border: rgba(255, 255, 255, 0.08);
-  --color-side-border-active: rgba(52, 211, 153, 0.35);
+  --color-side-border-active: rgba(56, 189, 248, 0.45);
   --color-side-text: #e2e8f0;
-  --color-side-muted: #8096a2;
+  --color-side-muted: #8ca2b8;
 
   /* Code Block Colors */
-  --color-code-bg: #090e11;
-  --color-code-header: #111a20;
-  --color-code-border: #1b2830;
+  --color-code-bg: #070d14;
+  --color-code-header: #0f1824;
+  --color-code-border: #1a2738;
   --color-code-text: #edf2f7;
 
   /* Elevation & Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-popover: 0 20px 30px -10px rgba(0, 0, 0, 0.35), 0 10px 15px -5px rgba(0, 0, 0, 0.2);
+  --shadow-popover: 0 20px 30px -10px rgba(0, 0, 0, 0.45), 0 10px 15px -5px rgba(0, 0, 0, 0.3);
 
   /* Layout */
   --sidebar-width: 300px;
@@ -129,7 +132,7 @@ a {
 }
 
 /* ==========================================================================
-   SIDEBAR
+   SIDEBAR (OLYMPIC NAVY THEME)
    ========================================================================== */
 .sidebar {
   width: var(--sidebar-width);
@@ -149,11 +152,11 @@ a {
 
 /* Sidebar Brand Header */
 .sidebar-header {
-  padding: 18px 18px 14px;
+  padding: 16px 16px 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .brand-wrapper {
@@ -169,10 +172,59 @@ a {
   text-decoration: none;
 }
 
+/* Brand Logo Badge (Holds logo.jpg vertical torch) */
+.brand-logo-badge {
+  width: 40px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
 .brand-logo-img {
-  height: 38px;
-  width: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.brand-accent {
+  color: var(--color-brand-flame-light);
+}
+
+.brand-year {
+  color: var(--color-brand-glow);
+}
+
+.brand-subtitle {
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  text-transform: uppercase;
 }
 
 .mobile-close-btn {
@@ -198,20 +250,20 @@ a {
   width: 100%;
   padding: 10px 16px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
   font-weight: 650;
   font-size: 13.5px;
   letter-spacing: 0.01em;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
 }
 
 .btn-new-chat:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 }
 
 .btn-new-chat:active {
@@ -270,7 +322,7 @@ a {
   line-height: 1.5;
 }
 
-/* Conversation Row Layering */
+/* Conversation Row Layering (Olympic Theme) */
 .conversation-row {
   position: relative;
   display: flex;
@@ -283,13 +335,13 @@ a {
 
 .conversation-row:hover {
   background: var(--color-side-card-hover);
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(56, 189, 248, 0.15);
 }
 
 .conversation-row.active {
   background: var(--color-side-card-active);
   border-color: var(--color-side-border-active);
-  box-shadow: inset 3px 0 0 var(--color-brand-primary);
+  box-shadow: inset 3.5px 0 0 var(--color-brand-primary), 0 4px 12px rgba(2, 132, 199, 0.12);
 }
 
 .conversation-item-btn {
@@ -356,7 +408,7 @@ a {
 }
 
 .conversation-row.active .conversation-meta-row {
-  color: #a7f3d0;
+  color: #bae6fd;
 }
 
 /* Action Trigger & Dropdown Menu */
@@ -397,9 +449,9 @@ a {
   right: 6px;
   z-index: 100;
   display: none;
-  min-width: 136px;
-  background: #141f26;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-width: 140px;
+  background: #0f2138;
+  border: 1px solid rgba(56, 189, 248, 0.25);
   border-radius: 10px;
   padding: 5px;
   box-shadow: var(--shadow-popover);
@@ -503,6 +555,7 @@ a {
 
 .footer-version {
   font-family: var(--font-mono);
+  color: #38bdf8;
 }
 
 /* ==========================================================================
@@ -653,7 +706,7 @@ a {
 .budget-progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #10b981, #06b6d4);
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
   border-radius: 999px;
   transition: width 0.3s ease, background-color 0.3s ease;
 }
@@ -684,7 +737,7 @@ a {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--color-brand-primary);
+  background: #10b981;
   box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
   animation: pulseDot 2s infinite;
 }
@@ -734,21 +787,23 @@ a {
 }
 
 .welcome-logo-emblem {
-  width: 80px;
-  height: 80px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  width: 84px;
+  height: 104px;
+  border-radius: 18px;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px;
+  box-shadow: 0 12px 32px rgba(2, 132, 199, 0.18);
+  border: 2px solid rgba(2, 132, 199, 0.2);
+  padding: 6px;
+  overflow: hidden;
 }
 
 .welcome-logo-emblem img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
 
 .welcome-headings h2 {
@@ -814,7 +869,7 @@ a {
   opacity: 0.72;
 }
 
-/* User Message */
+/* User Message (Royal Azure Theme) */
 .message-bubble.user {
   align-self: flex-end;
   max-width: 82%;
@@ -822,11 +877,11 @@ a {
 }
 
 .user-card {
-  background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
   border-radius: 18px 18px 4px 18px;
   padding: 12px 18px;
-  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
   font-size: 14.5px;
   line-height: 1.6;
 }
@@ -897,19 +952,23 @@ a {
 
 .model-avatar-badge {
   width: 28px;
-  height: 28px;
+  height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #0b1216, #16242c);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #cbd5e1;
   flex-shrink: 0;
+  padding: 2px;
+  overflow: hidden;
 }
 
 .model-avatar-badge img {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .model-title-text {
@@ -923,8 +982,8 @@ a {
   display: inline-block;
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--color-brand-primary);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -958,9 +1017,9 @@ a {
 }
 
 .btn-copy-message.copied {
-  background: #ecfdf5;
-  color: #059669;
-  border-color: #a7f3d0;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #7dd3fc;
 }
 
 /* Markdown Content Typography */
@@ -1006,22 +1065,22 @@ a {
 .message-body blockquote {
   margin: 14px 0;
   border-left: 3px solid var(--color-brand-primary);
-  background: #f0fdf4;
+  background: #f0f9ff;
   padding: 8px 16px;
   border-radius: 0 8px 8px 0;
-  color: #166534;
+  color: #0369a1;
   font-size: 14px;
 }
 
 .message-body a {
-  color: #0d9488;
+  color: var(--color-brand-primary);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .message-body a:hover {
-  color: #0f766e;
+  color: var(--color-brand-dark);
 }
 
 .inline-code {
@@ -1030,7 +1089,7 @@ a {
   border-radius: 5px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
-  color: #0f766e;
+  color: #0369a1;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 600;
@@ -1065,7 +1124,7 @@ a {
   border-radius: 12px;
   background: var(--color-code-bg);
   border: 1px solid var(--color-code-border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   overflow: hidden;
 }
 
@@ -1130,9 +1189,9 @@ a {
 }
 
 .btn-copy-code.copied {
-  background: rgba(16, 185, 129, 0.25);
-  border-color: #10b981;
-  color: #a7f3d0;
+  background: rgba(2, 132, 199, 0.3);
+  border-color: #0284c7;
+  color: #bae6fd;
 }
 
 .code-shell-container pre {
@@ -1160,7 +1219,7 @@ a {
 .py-operator { color: #fbbf24; }
 
 /* ==========================================================================
-   COMPOSER / INPUT DOCK (FIXING OVERSIZED TEXTBOX)
+   COMPOSER / INPUT DOCK
    ========================================================================== */
 .composer-dock {
   width: 100%;
@@ -1192,7 +1251,7 @@ a {
 
 .composer-pill-card:focus-within {
   border-color: var(--color-brand-primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), var(--shadow-lg);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15), var(--shadow-lg);
 }
 
 .composer-textarea {
@@ -1252,15 +1311,16 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-send-message:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.45);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 }
 
 .btn-send-message:active:not(:disabled) {
@@ -1380,7 +1440,7 @@ dialog.custom-modal::backdrop {
 .form-field-group input:focus {
   border-color: var(--color-brand-primary);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .modal-actions-bar {
@@ -1409,16 +1469,16 @@ dialog.custom-modal::backdrop {
 .btn-primary-action {
   padding: 9px 18px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
   font-size: 13.5px;
   font-weight: 650;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
   transition: all 0.15s ease;
 }
 
 .btn-primary-action:hover {
-  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 }
 
 .modal-notice-text {
@@ -1444,11 +1504,12 @@ dialog.custom-modal::backdrop {
   gap: 8px;
   padding: 10px 18px;
   border-radius: 999px;
-  background: #0f172a;
+  background: #091322;
+  border: 1px solid rgba(56, 189, 248, 0.3);
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
@@ -1460,7 +1521,7 @@ dialog.custom-modal::backdrop {
 .toast-bubble svg {
   width: 16px;
   height: 16px;
-  color: #34d399;
+  color: #38bdf8;
 }
 
 /* ==========================================================================
@@ -1513,4 +1574,3 @@ dialog.custom-modal::backdrop {
     padding: 0 12px 10px;
   }
 }
-

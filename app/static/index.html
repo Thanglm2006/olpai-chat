@@ -1,26 +1,37 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>OLP'AI'26 - Olympiad AI Console</title>
-  <link rel="icon" type="image/svg+xml" href="/static/assets/favicon.svg">
+  <title>OLP'AI'26 - Olympic Trí Tuệ Nhân Tạo Việt Nam</title>
+  <link rel="icon" type="image/jpeg" href="/static/assets/logo.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
   <div class="app-shell">
     <!-- Collapsible / Full-Height Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="brand-wrapper">
-          <a href="/" class="brand-link" title="OLP'AI'26 Console">
-            <img class="brand-logo-img" src="/static/assets/logo.svg" alt="OLP'AI'26 Logo">
+          <a href="/" class="brand-link" title="OLP'AI'26 - Olympic Trí Tuệ Nhân Tạo">
+            <div class="brand-logo-badge">
+              <img class="brand-logo-img" src="/static/assets/logo.jpg" alt="Logo Olympic AI">
+            </div>
+            <div class="brand-text-block">
+              <div class="brand-name">OLP<span class="brand-accent">’</span>AI<span class="brand-year">’26</span></div>
+              <div class="brand-subtitle">OLYMPIC AI VIỆT NAM</div>
+            </div>
           </a>
           <button class="mobile-close-btn" id="mobileCloseBtn" type="button" aria-label="Đóng thanh bên">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" width="18" height="18">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -48,7 +59,8 @@
       <div class="sidebar-footer">
         <div class="footer-nav">
           <a class="footer-link-btn" href="/api-docs" target="_blank" rel="noreferrer" title="Tài liệu API Swagger">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
               <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -57,16 +69,21 @@
             </svg>
             <span>API Docs</span>
           </a>
-          <a class="footer-link-btn" href="/health" target="_blank" rel="noreferrer" title="Kiểm tra trạng thái hệ thống">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <a class="footer-link-btn" href="/health" target="_blank" rel="noreferrer"
+            title="Kiểm tra trạng thái hệ thống">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
             </svg>
             <span>Health</span>
           </a>
           <button class="footer-link-btn" id="openSettingsBtn" type="button" title="Cài đặt khóa API">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
             </svg>
             <span>Cài đặt</span>
           </button>
@@ -84,7 +101,8 @@
       <header class="topbar">
         <div class="topbar-left">
           <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Mở thanh bên">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" width="18" height="18">
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -137,30 +155,24 @@
       <footer class="composer-dock">
         <div class="composer-inner-wrapper">
           <form class="composer-pill-card" id="chatForm">
-            <textarea
-              class="composer-textarea"
-              id="messageInput"
-              rows="1"
+            <textarea class="composer-textarea" id="messageInput" rows="1"
               placeholder="Nhập câu hỏi, bài toán hoặc đoạn code cần giải đáp..."
-              aria-label="Nội dung tin nhắn"
-            ></textarea>
+              aria-label="Nội dung tin nhắn"></textarea>
 
             <div class="composer-actions-group">
-              <button
-                class="btn-history-cmd"
-                id="historyUpBtn"
-                type="button"
-                title="Lệnh trước đó (Phím mũi tên lên ↑)"
-                aria-label="Lệnh trước đó"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <button class="btn-history-cmd" id="historyUpBtn" type="button" title="Lệnh trước đó (Phím mũi tên lên ↑)"
+                aria-label="Lệnh trước đó">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round">
                   <line x1="12" y1="19" x2="12" y2="5"></line>
                   <polyline points="5 12 12 5 19 12"></polyline>
                 </svg>
               </button>
 
-              <button class="btn-send-message" id="sendButton" type="submit" title="Gửi tin nhắn (Enter)" aria-label="Gửi tin nhắn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <button class="btn-send-message" id="sendButton" type="submit" title="Gửi tin nhắn (Enter)"
+                aria-label="Gửi tin nhắn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                  stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
@@ -183,13 +195,15 @@
       <div class="modal-header">
         <h3>Cập nhật Gemini API Key</h3>
         <button class="btn-close-dialog" id="closeSettingsBtn" type="button" aria-label="Đóng">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" width="18" height="18">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
-      <p class="modal-description">Khóa API sẽ được lưu an toàn trong SQLite và cập nhật trực tiếp vào phiên xử lý của Gemini.</p>
+      <p class="modal-description">Khóa API sẽ được lưu an toàn trong SQLite và cập nhật trực tiếp vào phiên xử lý của
+        Gemini.</p>
 
       <form id="settingsForm">
         <div class="form-field-group">
@@ -198,7 +212,8 @@
         </div>
         <div class="form-field-group">
           <label for="updatePassword">Mật khẩu xác thực bảo vệ</label>
-          <input id="updatePassword" type="password" autocomplete="off" placeholder="Nhập mật khẩu cập nhật..." required>
+          <input id="updatePassword" type="password" autocomplete="off" placeholder="Nhập mật khẩu cập nhật..."
+            required>
         </div>
 
         <div class="modal-actions-bar">
@@ -212,7 +227,8 @@
 
   <!-- Toast Notification Bubble -->
   <div class="toast-bubble" id="toastBubble">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
     <span id="toastMessage">Đã sao chép vào bộ nhớ tạm</span>
@@ -221,4 +237,5 @@
   <!-- Application Script -->
   <script src="/static/js/app.js" defer></script>
 </body>
+
 </html>
