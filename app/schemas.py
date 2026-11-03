@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 
 class CreateConversationRequest(BaseModel):
@@ -32,6 +32,26 @@ class ApiKeyUpdateResponse(BaseModel):
     configured: bool
     masked_api_key: str
     updated_at: datetime
+
+
+class RegisterRequest(BaseModel):
+    username: str = Field(min_length=2, max_length=120)
+    email: str = Field(min_length=5, max_length=254)
+    password: SecretStr = Field(min_length=8, max_length=128)
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    identifier: str = Field(min_length=2, max_length=254)
+    password: SecretStr = Field(min_length=1, max_length=128)
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    created_at: datetime
 
 
 class MessageResponse(BaseModel):

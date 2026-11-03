@@ -15,7 +15,39 @@
 </head>
 
 <body>
-  <div class="app-shell">
+  <section class="auth-screen" id="authScreen">
+    <div class="auth-panel">
+      <div class="auth-brand-mark">
+        <div class="auth-logo-badge">
+          <img src="/static/assets/logo.jpg" alt="Logo OLP AI">
+        </div>
+        <div>
+          <div class="auth-brand-name">OLP<span>’</span>AI<span class="auth-brand-year">’26</span></div>
+          <div class="auth-brand-subtitle">OLYMPIC AI VIỆT NAM</div>
+        </div>
+      </div>
+      <div class="auth-heading">
+        <p class="auth-eyebrow">Khu vực thí sinh</p>
+        <h1 id="authTitle">Đăng nhập để bắt đầu</h1>
+        <p id="authSubtitle">Lịch sử trao đổi của bạn được lưu riêng theo tài khoản.</p>
+      </div>
+      <form class="auth-form" id="authForm">
+        <div class="auth-field">
+          <label for="loginIdentifier">Tên đăng nhập/email</label>
+          <input id="loginIdentifier" type="text" autocomplete="username" maxlength="254" placeholder="Tên đăng nhập hoặc email" required>
+        </div>
+        <div class="auth-field">
+          <label for="authPassword">Mật khẩu</label>
+          <input id="authPassword" type="password" autocomplete="current-password" maxlength="128" placeholder="Nhập mật khẩu" required>
+        </div>
+        <button class="auth-submit" id="authSubmit" type="submit">Đăng nhập</button>
+        <p class="auth-notice" id="authNotice" role="status"></p>
+      </form>
+      <p class="auth-footer-note">Chỉ tài khoản đã xác thực mới có thể truy cập phòng chat.</p>
+    </div>
+  </section>
+
+  <div class="app-shell is-hidden" id="appShell">
     <!-- Collapsible / Full-Height Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
@@ -140,6 +172,12 @@
           <div class="connection-pill">
             <span class="status-pulse-dot" id="statusDot"></span>
             <span id="statusText">Connecting</span>
+          </div>
+
+          <div class="user-account-control">
+            <span class="user-avatar" id="userAvatar">?</span>
+            <span class="user-account-name" id="userAccountName">Thí sinh</span>
+            <button class="logout-button" id="logoutBtn" type="button" title="Đăng xuất">Đăng xuất</button>
           </div>
         </div>
       </header>

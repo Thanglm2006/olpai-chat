@@ -8,6 +8,7 @@
 
   // Application State
   const state = {
+    user: null,
     activeId: null,
     budget: 2000,
     model: "OLP AI",
@@ -60,14 +61,64 @@
     const { headers = {}, ...requestOptions } = options;
     const response = await fetch(url, {
       ...requestOptions,
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json", ...headers },
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
+      if (response.status === 401 && !url.includes("/auth/")) {
+        showAuthScreen();
+      }
       throw new Error(body.detail?.message || body.detail || `Yêu cầu thất bại (${response.status})`);
     }
     return body;
   };
+
+  function showAuthScreen() {
+    state.user = null;
+    $("#authScreen")?.classList.remove("is-hidden");
+    $("#appShell")?.classList.add("is-hidden");
+  }
+
+  function showChatScreen(user) {
+    state.user = user;
+    $("#authScreen")?.classList.add("is-hidden");
+    $("#appShell")?.classList.remove("is-hidden");
+    const name = user.username || "Thí sinh";
+    $("#userAccountName").textContent = name;
+    $("#userAvatar").textContent = name.trim().charAt(0).toUpperCase();
+  }
+
+  async function loadChat(user) {
+    showChatScreen(user);
+    try {
+      const config = await api("/api/v1/config");
+      state.budget = config.budget_tokens;
+      state.model = config.model;
+
+      $("#topbarModelName").textContent = config.model;
+      updateTokenMeter(0, state.budget);
+
+      await refreshConversations();
+
+      if (state.conversations.length > 0) {
+        await selectConversation(state.conversations[0].id);
+      } else {
+        $("#messagesStream").innerHTML = getWelcomeScreenHTML();
+        bindSuggestionChips();
+      }
+
+      $("#statusText").textContent = "Connected";
+      $("#statusDot").classList.remove("error");
+    } catch (error) {
+      console.error("Chat boot failure:", error);
+      $("#statusText").textContent = "Offline";
+      $("#statusDot").classList.add("error");
+      setNotice("Không thể kết nối đến máy chủ OLP AI");
+      $("#messagesStream").innerHTML = getWelcomeScreenHTML();
+      bindSuggestionChips();
+    }
+  }
 
   const setNotice = (message = "") => {
     const banner = $("#noticeBanner");
@@ -830,35 +881,52 @@
     }
   });
 
+  $("#authForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const notice = $("#authNotice");
+    const submit = $("#authSubmit");
+    submit.disabled = true;
+    notice.textContent = "";
+    try {
+      const payload = {
+        identifier: $("#loginIdentifier").value.trim(),
+        password: $("#authPassword").value,
+      };
+      const user = await api("/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      $("#authForm").reset();
+      await loadChat(user);
+    } catch (error) {
+      notice.textContent = error.message || "Không thể xác thực tài khoản";
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  $("#logoutBtn")?.addEventListener("click", async () => {
+    try {
+      await api("/api/v1/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Logout failure:", error);
+    }
+    state.user = null;
+    state.activeId = null;
+    state.conversations = [];
+    $("#conversationList").innerHTML = "";
+    $("#messagesStream").innerHTML = "";
+    showAuthScreen();
+    $("#loginIdentifier").focus();
+  });
+
   // System Initialization Boot
   async function boot() {
     try {
-      const config = await api("/api/v1/config");
-      state.budget = config.budget_tokens;
-      state.model = config.model;
-
-      $("#topbarModelName").textContent = config.model;
-      updateTokenMeter(0, state.budget);
-
-      await refreshConversations();
-
-      // If conversations exist, select the first one, or render welcome screen
-      if (state.conversations.length > 0) {
-        await selectConversation(state.conversations[0].id);
-      } else {
-        $("#messagesStream").innerHTML = getWelcomeScreenHTML();
-        bindSuggestionChips();
-      }
-
-      $("#statusText").textContent = "Connected";
-      $("#statusDot").classList.remove("error");
+      const user = await api("/api/v1/auth/me");
+      await loadChat(user);
     } catch (error) {
-      console.error("Boot failure:", error);
-      $("#statusText").textContent = "Offline";
-      $("#statusDot").classList.add("error");
-      setNotice("Không thể kết nối đến máy chủ OLP AI");
-      $("#messagesStream").innerHTML = getWelcomeScreenHTML();
-      bindSuggestionChips();
+      showAuthScreen();
     }
   }
 

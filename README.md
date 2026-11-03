@@ -1,6 +1,6 @@
 # Gemini Chatbot API
 
-FastAPI service for OLP AI with a cumulative input + output limit of 2,000 conversation tokens. Conversations and messages are persisted in SQLite.
+FastAPI service for OLP AI with a cumulative input + output limit of 2,000 conversation tokens. Candidates must register or log in before using the chat; conversations and messages are persisted in SQLite and isolated per account.
 
 Chat generation supports up to 6 concurrent Gemini calls by default. Requests above that limit wait for an available slot. Change `MAX_CONCURRENT_CHATS` in `.env` to adjust the limit.
 
@@ -25,6 +25,10 @@ OLP'AI'26 Web Console: <http://127.0.0.1:8000/> (Static assets located in `app/s
 - `GET /api-docs`
 - `GET /api-docs/openapi.json`
 - `GET /api/v1/config`
+- `POST /api/v1/auth/register` (creates a candidate account and starts a session)
+- `POST /api/v1/auth/login` (starts a session)
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/auth/me`
 - `PUT /api/v1/settings/api-key` (requires `X-API-Key-Password`)
 - `POST /api/v1/chat` (creates a conversation when `conversation_id` is omitted)
 - `POST /api/v1/conversations`
@@ -36,12 +40,26 @@ OLP'AI'26 Web Console: <http://127.0.0.1:8000/> (Static assets located in `app/s
 - `GET /api/v1/conversations/{id}/messages`
 - `POST /api/v1/conversations/{id}/messages`
 
+Chat and conversation endpoints require the `olpai_session` HttpOnly cookie set by the register or login endpoint. Each conversation is assigned to the authenticated candidate and all conversation operations are filtered by that account.
+
+Login accepts one `identifier` field (either the username or email) and a `password`; the payload does not require both username and email.
+
 Example:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/chat \
+  -b cookies.txt -c cookies.txt \
   -H 'Content-Type: application/json' \
   -d '{"message":"Xin chao"}'
+```
+
+Register first when using curl:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/register \
+  -c cookies.txt \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"olpai2026","email":"a@example.com","password":"password123"}'
 ```
 
 Set `GEMINI_MODEL` in `.env` if the model name enabled for your Google AI Studio project is different. Never commit `.env` because it contains the API key.
@@ -61,6 +79,8 @@ When a conversation reaches its 2,000-token budget, the remaining output is capp
 If Gemini stops generation with `MAX_TOKENS`, the assistant message is saved with `truncated: true` and the frontend displays `Phản hồi đã bị cắt do hết token.`.
 
 The API key is stored in exactly one SQLite row (`api_keys.id = 1`). It is seeded from `.env` on first startup and can only be updated, never deleted. The update password is read from `API_KEY_UPDATE_PASSWORD` in `.env`; the response returns only a masked key.
+
+Sessions last 7 days by default. Set `SESSION_TTL_HOURS` to change this duration. Set `SECURE_COOKIES=true` when serving over HTTPS.
 
 Update the key:
 

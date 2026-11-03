@@ -27,6 +27,8 @@ class Settings:
     api_key_update_password: str = ""
     system_instruction: str = DEFAULT_SYSTEM_INSTRUCTION
     max_concurrent_chats: int = 6
+    session_ttl_hours: int = 168
+    secure_cookies: bool = False
 
 
 def get_settings() -> Settings:
@@ -51,6 +53,9 @@ def get_settings() -> Settings:
             or DEFAULT_SYSTEM_INSTRUCTION
         ),
         max_concurrent_chats=max(1, int(os.getenv("MAX_CONCURRENT_CHATS", "6"))),
+        session_ttl_hours=max(1, int(os.getenv("SESSION_TTL_HOURS", "168"))),
+        secure_cookies=os.getenv("SECURE_COOKIES", "false").strip().lower()
+        in {"1", "true", "yes", "on"},
     )
 
 

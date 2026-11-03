@@ -21,10 +21,17 @@ class ChatService:
         self._locks: defaultdict[str, Lock] = defaultdict(Lock)
         self._chat_slots = BoundedSemaphore(settings.max_concurrent_chats)
 
-    def _get_conversation(self, conversation_id: str) -> dict[str, Any] | None:
+    def _get_conversation(
+        self, conversation_id: str, user_id: int | None = None
+    ) -> dict[str, Any] | None:
         with self.database.connection() as connection:
+            query = "SELECT * FROM conversations WHERE id = ?"
+            params: list[Any] = [conversation_id]
+            if user_id is not None:
+                query += " AND user_id = ?"
+                params.append(user_id)
             row = connection.execute(
-                "SELECT * FROM conversations WHERE id = ?", (conversation_id,)
+                query, params
             ).fetchone()
             return dict(row) if row else None
 
@@ -36,26 +43,34 @@ class ChatService:
             ).fetchall()
             return [dict(row) for row in rows]
 
-    def create_conversation(self, title: str = "New conversation") -> dict[str, Any]:
+    def create_conversation(
+        self, title: str = "New conversation", user_id: int | None = None
+    ) -> dict[str, Any]:
         conversation_id = str(uuid4())
         now = utc_now()
         with self.database.connection() as connection:
             connection.execute(
-                """INSERT INTO conversations (id, title, created_at, updated_at)
-                   VALUES (?, ?, ?, ?)""",
-                (conversation_id, title.strip() or "New conversation", now, now),
+                """INSERT INTO conversations (id, user_id, title, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (conversation_id, user_id, title.strip() or "New conversation", now, now),
             )
-        return self.get_conversation(conversation_id)
+        return self.get_conversation(conversation_id, user_id)
 
-    def list_conversations(self) -> list[dict[str, Any]]:
+    def list_conversations(self, user_id: int | None = None) -> list[dict[str, Any]]:
         with self.database.connection() as connection:
+            query = "SELECT * FROM conversations"
+            params: list[Any] = []
+            if user_id is not None:
+                query += " WHERE user_id = ?"
+                params.append(user_id)
+            query += " ORDER BY updated_at DESC"
             rows = connection.execute(
-                "SELECT * FROM conversations ORDER BY updated_at DESC"
+                query, params
             ).fetchall()
         return [self._format_conversation(dict(row), []) for row in rows]
 
-    def get_conversation(self, conversation_id: str) -> dict[str, Any]:
-        conversation = self._get_conversation(conversation_id)
+    def get_conversation(self, conversation_id: str, user_id: int | None = None) -> dict[str, Any]:
+        conversation = self._get_conversation(conversation_id, user_id)
         if conversation is None:
             raise HTTPException(status_code=404, detail="Conversation not found")
         return self._format_conversation(conversation, self._get_messages(conversation_id))
@@ -68,33 +83,45 @@ class ChatService:
             return "New conversation"
         return f"{cleaned[:77]}..." if len(cleaned) > 80 else cleaned
 
-    def rename_conversation(self, conversation_id: str, title: str) -> dict[str, Any]:
+    def rename_conversation(
+        self, conversation_id: str, title: str, user_id: int | None = None
+    ) -> dict[str, Any]:
         title = title.strip()
         if not title:
             raise HTTPException(status_code=422, detail="Conversation title cannot be empty")
         lock = self._locks[conversation_id]
         with lock:
-            if self._get_conversation(conversation_id) is None:
+            if self._get_conversation(conversation_id, user_id) is None:
                 raise HTTPException(status_code=404, detail="Conversation not found")
             with self.database.connection() as connection:
                 connection.execute(
-                    "UPDATE conversations SET title = ?, updated_at = ? WHERE id = ?",
-                    (title, utc_now(), conversation_id),
+                    "UPDATE conversations SET title = ?, updated_at = ? WHERE id = ?"
+                    + (" AND user_id = ?" if user_id is not None else ""),
+                    (title, utc_now(), conversation_id)
+                    if user_id is None
+                    else (title, utc_now(), conversation_id, user_id),
                 )
-        return self.get_conversation(conversation_id)
+        return self.get_conversation(conversation_id, user_id)
 
-    def delete_conversation(self, conversation_id: str) -> None:
+    def delete_conversation(self, conversation_id: str, user_id: int | None = None) -> None:
         with self.database.connection() as connection:
+            query = "DELETE FROM conversations WHERE id = ?"
+            params: list[Any] = [conversation_id]
+            if user_id is not None:
+                query += " AND user_id = ?"
+                params.append(user_id)
             cursor = connection.execute(
-                "DELETE FROM conversations WHERE id = ?", (conversation_id,)
+                query, params
             )
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Conversation not found")
 
-    def clear_conversation(self, conversation_id: str) -> dict[str, Any]:
+    def clear_conversation(
+        self, conversation_id: str, user_id: int | None = None
+    ) -> dict[str, Any]:
         lock = self._locks[conversation_id]
         with lock:
-            if self._get_conversation(conversation_id) is None:
+            if self._get_conversation(conversation_id, user_id) is None:
                 raise HTTPException(status_code=404, detail="Conversation not found")
             now = utc_now()
             with self.database.connection() as connection:
@@ -107,12 +134,14 @@ class ChatService:
                        WHERE id = ?""",
                     (now, conversation_id),
                 )
-        return self.get_conversation(conversation_id)
+        return self.get_conversation(conversation_id, user_id)
 
-    def add_message(self, conversation_id: str, user_message: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    def add_message(
+        self, conversation_id: str, user_message: str, user_id: int | None = None
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         lock = self._locks[conversation_id]
         with lock:
-            conversation = self._get_conversation(conversation_id)
+            conversation = self._get_conversation(conversation_id, user_id)
             if conversation is None:
                 raise HTTPException(status_code=404, detail="Conversation not found")
 
@@ -198,7 +227,7 @@ class ChatService:
     ) -> dict[str, Any]:
         used = conversation["used_input_tokens"] + conversation["used_output_tokens"]
         return {
-            **conversation,
+            **{key: value for key, value in conversation.items() if key != "user_id"},
             "used_tokens": used,
             "budget_tokens": self.settings.max_conversation_tokens,
             "remaining_tokens": max(self.settings.max_conversation_tokens - used, 0),
