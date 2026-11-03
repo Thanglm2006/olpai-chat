@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+import hmac
 from uuid import UUID
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 
@@ -15,6 +16,8 @@ from .schemas import (
     ChatResponse,
     ConversationResponse,
     CreateConversationRequest,
+    ApiKeyUpdateRequest,
+    ApiKeyUpdateResponse,
     MessageRequest,
     MessageResponse,
 )
@@ -28,7 +31,10 @@ chat_service = ChatService(database, gemini, settings)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    database.initialize()
+    database.initialize(settings.gemini_api_key)
+    stored_api_key = database.get_api_key()
+    if stored_api_key:
+        gemini.update_api_key(stored_api_key)
     yield
 
 
@@ -110,4 +116,39 @@ def chat(payload: ChatRequest):
 @app.get("/api/v1/config")
 def public_config() -> dict[str, str | int]:
     return {"model": settings.gemini_model, "budget_tokens": settings.max_conversation_tokens}
+
+
+def _mask_api_key(api_key: str) -> str:
+    if len(api_key) <= 8:
+        return "*" * len(api_key)
+    return f"{api_key[:4]}...{api_key[-4:]}"
+
+
+@app.put("/api/v1/settings/api-key", response_model=ApiKeyUpdateResponse)
+def update_api_key(
+    payload: ApiKeyUpdateRequest,
+    x_api_key_password: str | None = Header(default=None, alias="X-API-Key-Password"),
+):
+    configured_password = settings.api_key_update_password
+    if not configured_password:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="API_KEY_UPDATE_PASSWORD is not configured",
+        )
+    if not x_api_key_password or not hmac.compare_digest(
+        x_api_key_password, configured_password
+    ):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid update password")
+
+    new_api_key = payload.api_key.get_secret_value().strip()
+    if not new_api_key:
+        raise HTTPException(status_code=422, detail="api_key cannot be empty")
+
+    updated_at = database.update_api_key(new_api_key)
+    gemini.update_api_key(new_api_key)
+    return {
+        "configured": True,
+        "masked_api_key": _mask_api_key(new_api_key),
+        "updated_at": updated_at,
+    }
 

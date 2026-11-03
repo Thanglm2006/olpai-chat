@@ -17,6 +17,7 @@ class Settings:
     database_path: Path
     host: str
     port: int
+    api_key_update_password: str = ""
 
 
 def get_settings() -> Settings:
@@ -35,6 +36,7 @@ def get_settings() -> Settings:
         database_path=database_path,
         host=os.getenv("HOST", "127.0.0.1"),
         port=int(os.getenv("PORT", "8000")),
+        api_key_update_password=os.getenv("API_KEY_UPDATE_PASSWORD", "").strip(),
     )
 
 

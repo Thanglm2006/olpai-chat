@@ -30,7 +30,7 @@ class Database:
         finally:
             connection.close()
 
-    def initialize(self) -> None:
+    def initialize(self, seed_api_key: str | None = None) -> None:
         with self.connection() as connection:
             connection.executescript(
                 """
@@ -55,6 +55,38 @@ class Database:
 
                 CREATE INDEX IF NOT EXISTS idx_messages_conversation
                     ON messages(conversation_id, id);
+
+                CREATE TABLE IF NOT EXISTS api_keys (
+                    id INTEGER PRIMARY KEY CHECK (id = 1),
+                    api_key TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
                 """
             )
+            if seed_api_key:
+                now = utc_now()
+                connection.execute(
+                    """INSERT OR IGNORE INTO api_keys (id, api_key, created_at, updated_at)
+                       VALUES (1, ?, ?, ?)""",
+                    (seed_api_key, now, now),
+                )
+
+    def get_api_key(self) -> str | None:
+        with self.connection() as connection:
+            row = connection.execute(
+                "SELECT api_key FROM api_keys WHERE id = 1"
+            ).fetchone()
+        return str(row["api_key"]) if row else None
+
+    def update_api_key(self, api_key: str) -> str:
+        updated_at = utc_now()
+        with self.connection() as connection:
+            cursor = connection.execute(
+                "UPDATE api_keys SET api_key = ?, updated_at = ? WHERE id = 1",
+                (api_key, updated_at),
+            )
+            if cursor.rowcount != 1:
+                raise RuntimeError("API key singleton is not initialized")
+        return updated_at
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from threading import RLock
 from typing import Any
 
 from google import genai
@@ -9,7 +10,12 @@ from google.genai import types
 class GeminiService:
     def __init__(self, api_key: str, model: str) -> None:
         self.model = model
+        self._client_lock = RLock()
         self.client = genai.Client(api_key=api_key)
+
+    def update_api_key(self, api_key: str) -> None:
+        with self._client_lock:
+            self.client = genai.Client(api_key=api_key)
 
     @staticmethod
     def _contents(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -21,10 +27,11 @@ class GeminiService:
     def count_input_tokens(self, messages: list[dict[str, Any]]) -> int:
         if not messages:
             return 0
-        result = self.client.models.count_tokens(
-            model=self.model,
-            contents=self._contents(messages),
-        )
+        with self._client_lock:
+            result = self.client.models.count_tokens(
+                model=self.model,
+                contents=self._contents(messages),
+            )
         return int(result.total_tokens or 0)
 
     def generate(
@@ -32,13 +39,14 @@ class GeminiService:
         messages: list[dict[str, Any]],
         max_output_tokens: int,
     ) -> tuple[str, int, int]:
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=self._contents(messages),
-            config=types.GenerateContentConfig(
-                max_output_tokens=max_output_tokens,
-            ),
-        )
+        with self._client_lock:
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=self._contents(messages),
+                config=types.GenerateContentConfig(
+                    max_output_tokens=max_output_tokens,
+                ),
+            )
         text = (response.text or "").strip()
         if not text:
             raise RuntimeError("Gemini returned an empty response")

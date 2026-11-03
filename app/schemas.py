@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 
 
 class CreateConversationRequest(BaseModel):
@@ -18,6 +18,16 @@ class ChatRequest(BaseModel):
 
 class MessageRequest(BaseModel):
     message: str = Field(min_length=1, max_length=100_000)
+
+
+class ApiKeyUpdateRequest(BaseModel):
+    api_key: SecretStr = Field(min_length=1, max_length=1000)
+
+
+class ApiKeyUpdateResponse(BaseModel):
+    configured: bool
+    masked_api_key: str
+    updated_at: datetime
 
 
 class MessageResponse(BaseModel):

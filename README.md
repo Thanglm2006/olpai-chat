@@ -19,6 +19,7 @@ OpenAPI documentation: <http://127.0.0.1:8000/api-docs>
 - `GET /api-docs`
 - `GET /api-docs/openapi.json`
 - `GET /api/v1/config`
+- `PUT /api/v1/settings/api-key` (requires `X-API-Key-Password`)
 - `POST /api/v1/chat` (creates a conversation when `conversation_id` is omitted)
 - `POST /api/v1/conversations`
 - `GET /api/v1/conversations`
@@ -49,4 +50,15 @@ The API is then available at <http://127.0.0.1:8000>. SQLite data is stored in t
 `POST /api/v1/chat` without `conversation_id` creates a new UUID conversation and stores the request there. To continue an existing conversation, send its returned `conversation.id` in the next request. Messages from different conversation IDs are isolated by the database foreign key and query filter.
 
 When a conversation reaches its 2,000-token budget, the remaining output is capped to the available amount. If the next input itself cannot fit, the API returns `429` and does not write that message to the database. A different conversation has its own independent budget.
+
+The API key is stored in exactly one SQLite row (`api_keys.id = 1`). It is seeded from `.env` on first startup and can only be updated, never deleted. The update password is read from `API_KEY_UPDATE_PASSWORD` in `.env`; the response returns only a masked key.
+
+Update the key:
+
+```bash
+curl -X PUT http://127.0.0.1:8000/api/v1/settings/api-key \
+  -H "X-API-Key-Password: $API_KEY_UPDATE_PASSWORD" \
+  -H "Content-Type: application/json" \
+  -d '{"api_key":"new-gemini-api-key"}'
+```
 
