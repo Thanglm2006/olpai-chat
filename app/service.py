@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+import re
 from threading import BoundedSemaphore, Lock
 from typing import Any
 from uuid import UUID, uuid4
@@ -59,6 +60,29 @@ class ChatService:
             raise HTTPException(status_code=404, detail="Conversation not found")
         return self._format_conversation(conversation, self._get_messages(conversation_id))
 
+    @staticmethod
+    def _automatic_title(user_message: str) -> str:
+        cleaned = re.sub(r"```(?:python|py)?", "", user_message, flags=re.IGNORECASE)
+        cleaned = " ".join(cleaned.split()).strip()
+        if not cleaned:
+            return "New conversation"
+        return f"{cleaned[:77]}..." if len(cleaned) > 80 else cleaned
+
+    def rename_conversation(self, conversation_id: str, title: str) -> dict[str, Any]:
+        title = title.strip()
+        if not title:
+            raise HTTPException(status_code=422, detail="Conversation title cannot be empty")
+        lock = self._locks[conversation_id]
+        with lock:
+            if self._get_conversation(conversation_id) is None:
+                raise HTTPException(status_code=404, detail="Conversation not found")
+            with self.database.connection() as connection:
+                connection.execute(
+                    "UPDATE conversations SET title = ?, updated_at = ? WHERE id = ?",
+                    (title, utc_now(), conversation_id),
+                )
+        return self.get_conversation(conversation_id)
+
     def delete_conversation(self, conversation_id: str) -> None:
         with self.database.connection() as connection:
             cursor = connection.execute(
@@ -93,6 +117,14 @@ class ChatService:
                 raise HTTPException(status_code=404, detail="Conversation not found")
 
             old_messages = self._get_messages(conversation_id)
+            if not old_messages and conversation["title"] == "New conversation":
+                automatic_title = self._automatic_title(user_message)
+                with self.database.connection() as connection:
+                    connection.execute(
+                        "UPDATE conversations SET title = ?, updated_at = ? WHERE id = ?",
+                        (automatic_title, utc_now(), conversation_id),
+                    )
+                conversation["title"] = automatic_title
             model_messages = [
                 {"role": item["role"], "content": item["content"]}
                 for item in old_messages

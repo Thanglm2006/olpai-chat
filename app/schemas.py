@@ -11,6 +11,10 @@ class CreateConversationRequest(BaseModel):
     title: str = Field(default="New conversation", min_length=1, max_length=120)
 
 
+class RenameConversationRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+
+
 class ChatRequest(BaseModel):
     conversation_id: Optional[UUID] = None
     message: str = Field(min_length=1, max_length=100_000)

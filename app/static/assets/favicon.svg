@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="favAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+  <rect width="80" height="80" rx="20" fill="#0b1317" />
+  <!-- Outer Hex Shield -->
+  <path d="M40 8 L70 25 L70 59 L40 76 L10 59 L10 25 Z" fill="#131f24" stroke="url(#favGrad)" stroke-width="2.5" />
+  <!-- Inner Core -->
+  <path d="M40 18 L62 31 L62 55 L40 67 L18 55 L18 31 Z" fill="rgba(16, 185, 129, 0.12)" stroke="rgba(52, 211, 153, 0.45)" stroke-width="1.2" />
+  <!-- Center Neural Node -->
+  <circle cx="40" cy="42" r="7.5" fill="url(#favGrad)" />
+  <circle cx="40" cy="26" r="3.5" fill="#34d399" />
+  <circle cx="54" cy="51" r="3" fill="#22d3ee" />
+  <circle cx="26" cy="51" r="3" fill="#60a5fa" />
+  <path d="M40 29.5 L40 35 M40 49 L54 51 M40 49 L26 51" stroke="url(#favAccent)" stroke-width="2" stroke-linecap="round" />
+</svg>

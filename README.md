@@ -17,7 +17,7 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
 OpenAPI documentation: <http://127.0.0.1:8000/api-docs>
 
-Temporary test frontend: <http://127.0.0.1:8000/>
+OLP'AI'26 Web Console: <http://127.0.0.1:8000/> (Static assets located in `app/static/{css,js,assets}`)
 
 ## Endpoints
 
@@ -30,6 +30,7 @@ Temporary test frontend: <http://127.0.0.1:8000/>
 - `POST /api/v1/conversations`
 - `GET /api/v1/conversations`
 - `GET /api/v1/conversations/{id}`
+- `PATCH /api/v1/conversations/{id}` (rename conversation)
 - `DELETE /api/v1/conversations/{id}`
 - `DELETE /api/v1/conversations/{id}/messages` (clear and reset token usage)
 - `GET /api/v1/conversations/{id}/messages`

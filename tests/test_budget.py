@@ -89,6 +89,18 @@ class ConversationBudgetTest(unittest.TestCase):
             service.add_message(second["id"], "world")
             self.assertEqual(len(service.get_conversation(second["id"])["messages"]), 2)
 
+    def test_conversation_title_is_automatic_and_renameable(self):
+        with TemporaryDirectory() as directory:
+            service = self.make_service(directory)
+            conversation = service.create_conversation()
+
+            service.add_message(conversation["id"], "code Python")
+            titled = service.get_conversation(conversation["id"])
+            self.assertEqual(titled["title"], "code Python")
+
+            renamed = service.rename_conversation(conversation["id"], "Dijkstra Python")
+            self.assertEqual(renamed["title"], "Dijkstra Python")
+
     def test_concurrent_chat_limit_is_enforced(self):
         with TemporaryDirectory() as directory:
             database_path = Path(directory) / "test.db"

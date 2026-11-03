@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" fill="none">
+  <defs>
+    <linearGradient id="olpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Emblem Icon -->
+  <g transform="translate(10, 10)">
+    <!-- Outer Hex Shield -->
+    <path d="M40 4 L74 23 L74 61 L40 80 L6 61 L6 23 Z" fill="#0f171c" stroke="url(#olpGrad)" stroke-width="2.5" />
+    
+    <!-- Inner Glowing Core -->
+    <path d="M40 14 L65 29 L65 57 L40 71 L15 57 L15 29 Z" fill="rgba(16, 185, 129, 0.08)" stroke="rgba(52, 211, 153, 0.4)" stroke-width="1.2" />
+    
+    <!-- Circuit Lines & Nodes -->
+    <circle cx="40" cy="43" r="7" fill="url(#olpGrad)" filter="url(#glow)" />
+    <circle cx="40" cy="24" r="3.5" fill="#34d399" />
+    <circle cx="56" cy="52" r="3" fill="#22d3ee" />
+    <circle cx="24" cy="52" r="3" fill="#60a5fa" />
+    <path d="M40 27.5 L40 36 M40 50 L56 52 M40 50 L24 52" stroke="url(#accentGrad)" stroke-width="2" stroke-linecap="round" />
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- Main Title: OLP'AI'26 -->
+  <text x="102" y="52" font-family="'JetBrains Mono', 'Inter', -apple-system, sans-serif" font-weight="900" font-size="36" letter-spacing="-0.03em" fill="#f8fafc">
+    OLP<tspan fill="#34d399">’</tspan>AI<tspan fill="#22d3ee">’</tspan><tspan fill="url(#olpGrad)">26</tspan>
+  </text>
+
+  <!-- Tagline / Subtitle -->
+  <rect x="104" y="64" width="7" height="7" rx="1.5" fill="#10b981" />
+  <text x="118" y="71" font-family="'Inter', -apple-system, sans-serif" font-weight="700" font-size="9.5" letter-spacing="0.18em" fill="#94a3b8">
+    OLYMPIAD AI ASSISTANT
+  </text>
+  <rect x="256" y="63" width="38" height="13" rx="3" fill="rgba(16, 185, 129, 0.15)" stroke="rgba(52, 211, 153, 0.3)" stroke-width="0.8" />
+  <text x="262" y="72" font-family="'JetBrains Mono', monospace" font-weight="800" font-size="8" fill="#34d399">PRO</text>
+</svg>

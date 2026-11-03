@@ -8,6 +8,7 @@ from uuid import UUID
 from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .db import Database
@@ -21,6 +22,7 @@ from .schemas import (
     ApiKeyUpdateResponse,
     MessageRequest,
     MessageResponse,
+    RenameConversationRequest,
 )
 from .service import ChatService
 
@@ -50,10 +52,18 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 
 @app.get("/", include_in_schema=False)
 def frontend():
-    return FileResponse(Path(__file__).parent / "static" / "index.html")
+    return FileResponse(static_dir / "index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return FileResponse(static_dir / "assets" / "favicon.svg", media_type="image/svg+xml")
 
 
 @app.get("/api-docs", include_in_schema=False)
@@ -92,6 +102,11 @@ def list_conversations():
 @app.get("/api/v1/conversations/{conversation_id}", response_model=ConversationResponse)
 def get_conversation(conversation_id: UUID):
     return chat_service.get_conversation(str(conversation_id))
+
+
+@app.patch("/api/v1/conversations/{conversation_id}", response_model=ConversationResponse)
+def rename_conversation(conversation_id: UUID, payload: RenameConversationRequest):
+    return chat_service.rename_conversation(str(conversation_id), payload.title)
 
 
 @app.delete("/api/v1/conversations/{conversation_id}", status_code=204)
