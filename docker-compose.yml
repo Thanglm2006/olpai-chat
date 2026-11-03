@@ -1,0 +1,19 @@
+services:
+  chatbot-api:
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      DATABASE_PATH: /app/data/chatbot.db
+    ports:
+      - "8000:8000"
+    volumes:
+      - chatbot_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  chatbot_data:
+
