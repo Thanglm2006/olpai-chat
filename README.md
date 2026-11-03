@@ -2,6 +2,8 @@
 
 FastAPI service for OLP AI with a cumulative input + output limit of 2,000 conversation tokens. Conversations and messages are persisted in SQLite.
 
+Chat generation supports up to 6 concurrent Gemini calls by default. Requests above that limit wait for an available slot. Change `MAX_CONCURRENT_CHATS` in `.env` to adjust the limit.
+
 The assistant has a fixed system instruction identifying it as OLP AI, an assistant for answering questions and writing, explaining, reviewing, and debugging code for OLP AI problems. For code requests it gives a short approach explanation before the code and avoids long tutorials unless requested. This instruction is sent separately through Gemini's `system_instruction`, is not saved in conversation history, and is excluded from the local 2,000-token conversation budget.
 
 ## Run

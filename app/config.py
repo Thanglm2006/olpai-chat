@@ -25,6 +25,7 @@ class Settings:
     port: int
     api_key_update_password: str = ""
     system_instruction: str = DEFAULT_SYSTEM_INSTRUCTION
+    max_concurrent_chats: int = 6
 
 
 def get_settings() -> Settings:
@@ -48,6 +49,7 @@ def get_settings() -> Settings:
             os.getenv("AI_SYSTEM_INSTRUCTION", DEFAULT_SYSTEM_INSTRUCTION).strip()
             or DEFAULT_SYSTEM_INSTRUCTION
         ),
+        max_concurrent_chats=max(1, int(os.getenv("MAX_CONCURRENT_CHATS", "6"))),
     )
 
 

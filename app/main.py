@@ -71,7 +71,12 @@ def api_docs_openapi():
 
 @app.get("/health")
 def health() -> dict[str, str | int]:
-    return {"status": "ok", "model": settings.gemini_model, "budget_tokens": settings.max_conversation_tokens}
+    return {
+        "status": "ok",
+        "model": settings.gemini_model,
+        "budget_tokens": settings.max_conversation_tokens,
+        "max_concurrent_chats": settings.max_concurrent_chats,
+    }
 
 
 @app.post("/api/v1/conversations", response_model=ConversationResponse, status_code=201)
@@ -125,7 +130,11 @@ def chat(payload: ChatRequest):
 
 @app.get("/api/v1/config")
 def public_config() -> dict[str, str | int]:
-    return {"model": settings.gemini_model, "budget_tokens": settings.max_conversation_tokens}
+    return {
+        "model": settings.gemini_model,
+        "budget_tokens": settings.max_conversation_tokens,
+        "max_concurrent_chats": settings.max_concurrent_chats,
+    }
 
 
 def _mask_api_key(api_key: str) -> str:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from threading import Lock
+from threading import BoundedSemaphore, Lock
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -18,6 +18,7 @@ class ChatService:
         self.gemini = gemini
         self.settings = settings
         self._locks: defaultdict[str, Lock] = defaultdict(Lock)
+        self._chat_slots = BoundedSemaphore(settings.max_concurrent_chats)
 
     def _get_conversation(self, conversation_id: str) -> dict[str, Any] | None:
         with self.database.connection() as connection:
@@ -98,20 +99,21 @@ class ChatService:
             ]
             model_messages.append({"role": "user", "content": user_message})
 
-            input_tokens = self.gemini.count_input_tokens(model_messages)
-            used_tokens = conversation["used_input_tokens"] + conversation["used_output_tokens"]
-            remaining = self.settings.max_conversation_tokens - used_tokens
-            if input_tokens >= remaining:
-                raise HTTPException(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail={
-                        "message": "Conversation token budget exhausted before generation",
-                        "remaining_tokens": max(remaining, 0),
-                        "required_input_tokens": input_tokens,
-                    },
-                )
-
+            self._chat_slots.acquire()
             try:
+                input_tokens = self.gemini.count_input_tokens(model_messages)
+                used_tokens = conversation["used_input_tokens"] + conversation["used_output_tokens"]
+                remaining = self.settings.max_conversation_tokens - used_tokens
+                if input_tokens >= remaining:
+                    raise HTTPException(
+                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                        detail={
+                            "message": "Conversation token budget exhausted before generation",
+                            "remaining_tokens": max(remaining, 0),
+                            "required_input_tokens": input_tokens,
+                        },
+                    )
+
                 answer, _provider_input_tokens, output_tokens = self.gemini.generate(
                     model_messages,
                     max_output_tokens=remaining - input_tokens,
@@ -120,6 +122,8 @@ class ChatService:
                 raise
             except Exception as exc:
                 raise HTTPException(status_code=502, detail=f"Gemini API error: {exc}") from exc
+            finally:
+                self._chat_slots.release()
 
             # Use the count from the response when available, but never allow a bad
             # provider usage value to make the local budget negative.

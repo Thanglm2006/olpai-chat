@@ -18,6 +18,10 @@ class GeminiService:
         with self._client_lock:
             self.client = genai.Client(api_key=api_key)
 
+    def _get_client(self) -> genai.Client:
+        with self._client_lock:
+            return self.client
+
     @staticmethod
     def _contents(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [
@@ -28,11 +32,11 @@ class GeminiService:
     def count_input_tokens(self, messages: list[dict[str, Any]]) -> int:
         if not messages:
             return 0
-        with self._client_lock:
-            result = self.client.models.count_tokens(
-                model=self.model,
-                contents=self._contents(messages),
-            )
+        client = self._get_client()
+        result = client.models.count_tokens(
+            model=self.model,
+            contents=self._contents(messages),
+        )
         return int(result.total_tokens or 0)
 
     def generate(
@@ -40,15 +44,15 @@ class GeminiService:
         messages: list[dict[str, Any]],
         max_output_tokens: int,
     ) -> tuple[str, int, int]:
-        with self._client_lock:
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=self._contents(messages),
-                config=types.GenerateContentConfig(
-                    max_output_tokens=max_output_tokens,
-                    system_instruction=self.system_instruction,
-                ),
-            )
+        client = self._get_client()
+        response = client.models.generate_content(
+            model=self.model,
+            contents=self._contents(messages),
+            config=types.GenerateContentConfig(
+                max_output_tokens=max_output_tokens,
+                system_instruction=self.system_instruction,
+            ),
+        )
         text = (response.text or "").strip()
         if not text:
             raise RuntimeError("Gemini returned an empty response")
