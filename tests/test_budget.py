@@ -19,7 +19,7 @@ class FakeGemini:
     def generate(self, messages, max_output_tokens):
         # Simulates a provider that obeys max_output_tokens exactly.
         output_tokens = max_output_tokens
-        return "x " * output_tokens, self.count_input_tokens(messages), output_tokens
+        return "x " * output_tokens, self.count_input_tokens(messages), output_tokens, False
 
 
 class ConcurrentFakeGemini(FakeGemini):
@@ -35,7 +35,12 @@ class ConcurrentFakeGemini(FakeGemini):
         sleep(0.03)
         with self.lock:
             self.active -= 1
-        return "ok", self.count_input_tokens(messages), 1
+        return "ok", self.count_input_tokens(messages), 1, False
+
+
+class TruncatedFakeGemini(FakeGemini):
+    def generate(self, messages, max_output_tokens):
+        return "partial response", self.count_input_tokens(messages), max_output_tokens, True
 
 
 class ConversationBudgetTest(unittest.TestCase):
@@ -112,6 +117,27 @@ class ConversationBudgetTest(unittest.TestCase):
 
             self.assertLessEqual(fake_gemini.max_active, 2)
             self.assertGreater(fake_gemini.max_active, 1)
+
+    def test_truncated_response_is_saved_with_notice_flag(self):
+        with TemporaryDirectory() as directory:
+            database_path = Path(directory) / "test.db"
+            database = Database(database_path)
+            database.initialize()
+            settings = Settings(
+                gemini_api_key="test-key",
+                gemini_model="gemini-3.5-flash-lite",
+                max_conversation_tokens=10,
+                database_path=database_path,
+                host="127.0.0.1",
+                port=8000,
+            )
+            service = ChatService(database, TruncatedFakeGemini(), settings)
+            conversation = service.create_conversation()
+
+            _, answer = service.add_message(conversation["id"], "hello")
+
+            self.assertTrue(answer["truncated"])
+            self.assertTrue(service.get_conversation(conversation["id"])["messages"][1]["truncated"])
 
 
 if __name__ == "__main__":

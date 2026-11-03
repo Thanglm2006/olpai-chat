@@ -74,7 +74,7 @@
     .side-links a { color: #b8cfcc; font-size: 12px; text-decoration: none; }
     .side-links a:hover { color: white; text-decoration: underline; }
 
-    .workspace { display: flex; min-width: 0; flex-direction: column; }
+    .workspace { display: flex; min-width: 0; min-height: 100vh; height: 100vh; flex-direction: column; overflow: hidden; }
     .topbar {
       display: flex;
       align-items: center;
@@ -88,11 +88,11 @@
     .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint-strong); }
     .status-dot.error { background: var(--danger); }
-    .content { display: flex; width: min(980px, 100%); flex: 1; flex-direction: column; margin: 0 auto; padding: 28px 30px 22px; }
+    .content { display: flex; width: 100%; max-width: none; flex: 1; min-height: 0; flex-direction: column; margin: 0; padding: 22px 28px 18px; }
     .conversation-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
     .conversation-head h3 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
     .conversation-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-    .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .header-tools { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: flex-end; }
     .button {
       border: 1px solid var(--line);
       border-radius: 6px;
@@ -105,12 +105,13 @@
     .button.danger { color: var(--danger); }
     .button.primary { border-color: var(--mint-strong); background: var(--mint-strong); color: white; }
     .button:disabled { cursor: not-allowed; opacity: .5; }
-    .budget { margin-top: 22px; border: 1px solid var(--line); border-radius: 8px; padding: 15px 16px; background: var(--surface); box-shadow: var(--shadow); }
+    .budget { width: 210px; border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; background: var(--surface); }
     .budget-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; color: var(--muted); font-size: 12px; }
     .budget-row strong { color: var(--ink); font-size: 13px; }
-    .meter { height: 7px; margin-top: 10px; overflow: hidden; border-radius: 99px; background: #e8eeee; }
+    .meter { height: 5px; margin-top: 7px; overflow: hidden; border-radius: 99px; background: #e8eeee; }
     .meter-fill { width: 0; height: 100%; background: var(--coral); transition: width .2s ease; }
-    .messages { display: flex; flex: 1; flex-direction: column; gap: 15px; min-height: 300px; margin: 24px 0; overflow: auto; padding: 2px 2px 8px; }
+    .chat-panel { display: flex; flex: 1; min-height: 0; flex-direction: column; margin-top: 24px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }
+    .messages { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 15px; overflow-y: auto; padding: 24px; }
     .empty { display: grid; min-height: 260px; place-items: center; border: 1px dashed #cbd6d5; border-radius: 8px; color: var(--muted); text-align: center; }
     .empty strong { display: block; margin-bottom: 4px; color: var(--ink); }
     .message { max-width: min(780px, 90%); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
@@ -118,7 +119,24 @@
     .message.model { align-self: flex-start; }
     .message-label { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
     .message-body { white-space: pre-wrap; overflow-wrap: anywhere; }
-    .composer { display: flex; align-items: flex-end; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--surface); box-shadow: var(--shadow); }
+    .message.pending { opacity: .68; }
+    .truncated-note { margin-top: 10px; border-left: 3px solid var(--coral); padding-left: 9px; color: #9b5744; font-size: 12px; font-weight: 700; }
+    .code-shell { margin: 12px 0 2px; overflow: hidden; border: 1px solid #cdd9d8; border-radius: 6px; background: #18252a; color: #edf5f1; white-space: normal; }
+    .code-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, .12); padding: 7px 9px; color: #b8cfcc; font: 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: lowercase; }
+    .copy-code { border: 1px solid rgba(255, 255, 255, .22); border-radius: 4px; padding: 4px 8px; background: transparent; color: #edf5f1; font-size: 11px; }
+    .copy-code:hover { border-color: var(--mint); background: rgba(184, 228, 208, .12); }
+    .code-shell pre { margin: 0; overflow-x: auto; padding: 13px 14px; }
+    .code-shell code { font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; }
+    .py-keyword { color: #ff9f7f; }
+    .py-string { color: #b8e4a8; }
+    .py-comment { color: #8ea7a2; font-style: italic; }
+    .py-number { color: #f7cf78; }
+    .py-builtin { color: #8fd3ff; }
+    .py-constant { color: #d5a8ff; }
+    .py-function { color: #f0d18a; }
+    .py-operator { color: #f3f5d0; }
+    .composer-wrap { border-top: 1px solid var(--line); padding: 12px 16px 14px; background: #fbfcfc; }
+    .composer { display: flex; align-items: flex-end; gap: 10px; }
     .composer textarea { flex: 1; min-height: 46px; max-height: 150px; resize: vertical; border: 0; outline: 0; padding: 8px 4px; background: transparent; color: var(--ink); }
     .hint { margin: 8px 2px 0; color: var(--muted); font-size: 11px; }
     .notice { min-height: 20px; margin-top: 10px; color: var(--danger); font-size: 12px; }
@@ -132,14 +150,29 @@
     .field input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px 11px; outline: 0; }
     .field input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 3px rgba(27, 138, 104, .12); }
     .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    .conversation-row { position: relative; display: flex; align-items: stretch; border: 1px solid transparent; border-radius: 6px; }
+    .conversation-row:hover { background: rgba(255, 255, 255, .07); }
+    .conversation-row.active { border-color: rgba(184, 228, 208, .55); background: rgba(184, 228, 208, .13); }
+    .conversation-item { display: block; min-width: 0; flex: 1; border: 0; border-radius: 5px 0 0 5px; padding: 10px 7px 10px 11px; background: transparent; color: var(--sidebar-ink); text-align: left; }
+    .conversation-item:hover { background: transparent; }
+    .menu-trigger { width: 32px; border: 0; border-radius: 0 5px 5px 0; background: transparent; color: #9cb0b1; font-size: 18px; line-height: 1; }
+    .menu-trigger:hover, .conversation-row.menu-open .menu-trigger { background: rgba(255, 255, 255, .1); color: white; }
+    .conversation-menu { position: absolute; z-index: 5; top: calc(100% + 4px); right: 4px; display: none; min-width: 118px; border: 1px solid #46595b; border-radius: 6px; padding: 4px; background: #203239; box-shadow: 0 10px 24px rgba(0, 0, 0, .24); }
+    .conversation-row.menu-open .conversation-menu { display: grid; }
+    .conversation-menu button { border: 0; border-radius: 4px; padding: 8px 9px; background: transparent; color: var(--sidebar-ink); font-size: 12px; text-align: left; }
+    .conversation-menu button:hover { background: rgba(255, 255, 255, .1); }
+    .conversation-menu button[data-action="delete"] { color: #ffb4a2; }
     @media (max-width: 720px) {
       .shell { display: block; }
+      .workspace { height: auto; min-height: 100vh; overflow: visible; }
       .sidebar { min-height: auto; padding: 16px; }
       .conversation-list { max-height: 150px; }
       .topbar, .content { padding: 17px 16px; }
       .conversation-head { display: block; }
-      .actions { justify-content: flex-start; margin-top: 14px; }
-      .messages { min-height: 260px; }
+      .header-tools { justify-content: flex-start; margin-top: 12px; }
+      .budget { width: 210px; }
+      .chat-panel { min-height: 520px; }
+      .messages { padding: 16px; }
     }
   </style>
 </head>
@@ -173,27 +206,27 @@
             <h3 id="conversationTitle">New conversation</h3>
             <p id="conversationId">No conversation selected</p>
           </div>
-          <div class="actions">
-            <button class="button" id="clearChat" disabled>Clear</button>
-            <button class="button danger" id="deleteChat" disabled>Delete</button>
+          <div class="header-tools">
+            <div class="budget">
+              <div class="budget-row"><span>Tokens</span><strong id="tokenCount">0 / 2000</strong></div>
+              <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+            </div>
           </div>
         </div>
 
-        <div class="budget">
-          <div class="budget-row"><span>Conversation token budget</span><strong id="tokenCount">0 / 2000</strong></div>
-          <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+        <div class="chat-panel">
+          <div class="messages" id="messages">
+            <div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>
+          </div>
+          <div class="composer-wrap">
+            <form class="composer" id="chatForm">
+              <textarea id="messageInput" placeholder="Write a message..." aria-label="Message"></textarea>
+              <button class="button primary" id="sendButton" type="submit">Send</button>
+            </form>
+            <div class="hint">Enter sends. Shift + Enter adds a new line.</div>
+            <div class="notice" id="notice" role="status"></div>
+          </div>
         </div>
-
-        <div class="messages" id="messages">
-          <div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>
-        </div>
-
-        <form class="composer" id="chatForm">
-          <textarea id="messageInput" placeholder="Write a message..." aria-label="Message"></textarea>
-          <button class="button primary" id="sendButton" type="submit">Send</button>
-        </form>
-        <div class="hint">Enter sends. Shift + Enter adds a new line.</div>
-        <div class="notice" id="notice" role="status"></div>
       </section>
     </main>
   </div>
@@ -223,15 +256,149 @@
     const setNotice = (message = "") => { $("#notice").textContent = message; };
     const formatDate = (value) => value ? new Date(value).toLocaleString() : "";
 
+    const pythonKeywords = new Set("and as assert async await break case class continue def del elif else except finally for from global if import in is lambda match nonlocal not or pass raise return try while with yield print".split(" "));
+    const pythonBuiltins = new Set("abs all any bool dict enumerate filter float input int len list map max min open range set str sum tuple zip isinstance super".split(" "));
+    const pythonConstants = new Set(["True", "False", "None"]);
+
+    function highlightPython(source) {
+      let html = "";
+      let index = 0;
+      while (index < source.length) {
+        const char = source[index];
+        if (/\s/.test(char)) {
+          let end = index + 1;
+          while (end < source.length && /\s/.test(source[end])) end += 1;
+          html += escapeHtml(source.slice(index, end));
+          index = end;
+          continue;
+        }
+        if (char === "#") {
+          const end = source.indexOf("\n", index);
+          const stop = end < 0 ? source.length : end;
+          html += `<span class="py-comment">${escapeHtml(source.slice(index, stop))}</span>`;
+          index = stop;
+          continue;
+        }
+        if (char === "'" || char === '"') {
+          const triple = source.slice(index, index + 3) === char.repeat(3);
+          const quote = triple ? char.repeat(3) : char;
+          let end = index + quote.length;
+          while (end < source.length) {
+            if (source[end] === "\\") { end += 2; continue; }
+            if (source.slice(end, end + quote.length) === quote) { end += quote.length; break; }
+            end += 1;
+          }
+          html += `<span class="py-string">${escapeHtml(source.slice(index, end))}</span>`;
+          index = end;
+          continue;
+        }
+        const number = source.slice(index).match(/^(?:\d+(?:\.\d+)?|\.\d+)/);
+        if (number) {
+          html += `<span class="py-number">${number[0]}</span>`;
+          index += number[0].length;
+          continue;
+        }
+        const identifier = source.slice(index).match(/^[A-Za-z_]\w*/);
+        if (identifier) {
+          const word = identifier[0];
+          const after = source.slice(index + word.length).match(/^\s*\(/);
+          const className = pythonKeywords.has(word) ? "py-keyword" : pythonConstants.has(word) ? "py-constant" : pythonBuiltins.has(word) ? "py-builtin" : after ? "py-function" : "";
+          html += className ? `<span class="${className}">${word}</span>` : escapeHtml(word);
+          index += word.length;
+          continue;
+        }
+        if (/[=+\-*\/%<>!&|^~:]/.test(char)) {
+          html += `<span class="py-operator">${escapeHtml(char)}</span>`;
+        } else {
+          html += escapeHtml(char);
+        }
+        index += 1;
+      }
+      return html;
+    }
+
+    function codeBlock(language, source) {
+      const normalizedLanguage = language.toLowerCase() === "py" ? "python" : (language || "code").toLowerCase();
+      const renderedSource = normalizedLanguage === "python" ? highlightPython(source) : escapeHtml(source);
+      return `<div class="code-shell"><div class="code-toolbar"><span>${escapeHtml(normalizedLanguage)}</span><button class="copy-code" type="button" title="Copy code">Copy</button></div><pre><code>${renderedSource}</code></pre></div>`;
+    }
+
+    function looksLikePython(source) {
+      const firstLine = source.split(/\r?\n/).find((line) => line.trim())?.trim() || "";
+      return /^(?:from\s|import\s|def\s+\w+\s*\(|class\s+\w+|async\s+def\s|if\s+__name__|(?:for|while|if|elif|else|try|except|with)\b.*:|(?:print|return)\b|[A-Za-z_]\w*\s*=\s*|#)/.test(firstLine);
+    }
+
+    function renderMessageContent(content) {
+      if (!content.includes("```") && looksLikePython(content.trim())) return codeBlock("python", content.trim());
+      const fence = /```([a-zA-Z0-9_+-]*)[ \t]*\r?\n([\s\S]*?)```/g;
+      const chunks = [];
+      let cursor = 0;
+      let match;
+      while ((match = fence.exec(content)) !== null) {
+        chunks.push(escapeHtml(content.slice(cursor, match.index)));
+        const source = match[2].replace(/^\n/, "").replace(/\n$/, "");
+        chunks.push(codeBlock(match[1] || "code", source));
+        cursor = match.index + match[0].length;
+      }
+      chunks.push(escapeHtml(content.slice(cursor)));
+      return chunks.join("");
+    }
+
+    function bindCopyButtons() {
+      document.querySelectorAll(".copy-code").forEach((button) => button.addEventListener("click", async () => {
+        const source = button.closest(".code-shell").querySelector("code").textContent;
+        try {
+          await navigator.clipboard.writeText(source);
+          button.textContent = "Copied";
+          setTimeout(() => { button.textContent = "Copy"; }, 1400);
+        } catch (error) {
+          button.textContent = "Copy failed";
+        }
+      }));
+    }
+
+    function appendPendingMessage(role, content, pendingId) {
+      const messages = $("#messages");
+      messages.querySelector(".empty")?.remove();
+      const label = role === "user" ? "You" : "Gemini";
+      const rendered = role === "user" ? escapeHtml(content) : escapeHtml(content);
+      messages.insertAdjacentHTML("beforeend", `<article class="message ${role} pending" data-pending-id="${pendingId}"><div class="message-label">${label}</div><div class="message-body">${rendered}</div></article>`);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function removePendingMessage(pendingId) {
+      document.querySelector(`[data-pending-id="${pendingId}"]`)?.remove();
+    }
+
+    function closeConversationMenus() {
+      document.querySelectorAll(".conversation-row.menu-open").forEach((row) => row.classList.remove("menu-open"));
+    }
+
     function renderConversations() {
       const list = $("#conversationList");
       if (!state.conversations.length) { list.innerHTML = '<div style="padding:8px;color:#9cb0b1;font-size:12px">No conversations yet.</div>'; return; }
       list.innerHTML = state.conversations.map((item) => `
-        <button class="conversation-item ${item.id === state.activeId ? "active" : ""}" data-id="${item.id}">
-          <span class="conversation-title">${escapeHtml(item.title)}</span>
-          <span class="conversation-meta">${item.used_tokens} / ${item.budget_tokens} tokens</span>
-        </button>`).join("");
-      list.querySelectorAll("[data-id]").forEach((button) => button.addEventListener("click", () => selectConversation(button.dataset.id)));
+        <div class="conversation-row ${item.id === state.activeId ? "active" : ""}" data-row-id="${escapeHtml(item.id)}">
+          <button class="conversation-item" data-id="${escapeHtml(item.id)}" title="Open conversation">
+            <span class="conversation-title">${escapeHtml(item.title)}</span>
+            <span class="conversation-meta">${item.used_tokens} / ${item.budget_tokens} tokens</span>
+          </button>
+          <button class="menu-trigger" data-menu-id="${escapeHtml(item.id)}" title="Conversation actions" aria-label="Conversation actions">...</button>
+          <div class="conversation-menu">
+            <button type="button" data-action="clear" data-id="${escapeHtml(item.id)}">Clear</button>
+            <button type="button" data-action="delete" data-id="${escapeHtml(item.id)}">Delete</button>
+          </div>
+        </div>`).join("");
+      list.querySelectorAll(".conversation-item").forEach((button) => button.addEventListener("click", () => selectConversation(button.dataset.id)));
+      list.querySelectorAll(".menu-trigger").forEach((button) => button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const row = button.closest(".conversation-row");
+        const wasOpen = row.classList.contains("menu-open");
+        closeConversationMenus();
+        if (!wasOpen) row.classList.add("menu-open");
+      }));
+      list.querySelectorAll("[data-action='clear']").forEach((button) => button.addEventListener("click", () => clearConversation(button.dataset.id)));
+      list.querySelectorAll("[data-action='delete']").forEach((button) => button.addEventListener("click", () => deleteConversation(button.dataset.id)));
     }
 
     function renderConversation(conversation) {
@@ -240,14 +407,14 @@
       $("#conversationId").textContent = conversation.id;
       $("#tokenCount").textContent = `${conversation.used_tokens} / ${conversation.budget_tokens}`;
       $("#meterFill").style.width = `${Math.min(100, (conversation.used_tokens / conversation.budget_tokens) * 100)}%`;
-      $("#clearChat").disabled = false;
-      $("#deleteChat").disabled = false;
       $("#messages").innerHTML = conversation.messages.length ? conversation.messages.map((message) => `
         <article class="message ${message.role === "user" ? "user" : "model"}">
           <div class="message-label">${message.role === "user" ? "You" : "Gemini"}</div>
-          <div class="message-body">${escapeHtml(message.content)}</div>
+          <div class="message-body">${renderMessageContent(message.content)}</div>
+          ${message.truncated ? '<div class="truncated-note">Phản hồi đã bị cắt do hết token.</div>' : ""}
         </article>`).join("") : '<div class="empty"><div><strong>Conversation cleared</strong><span>Send a message to continue.</span></div></div>';
       $("#messages").scrollTop = $("#messages").scrollHeight;
+      bindCopyButtons();
       renderConversations();
     }
 
@@ -273,12 +440,20 @@
       if (!message) return;
       $("#sendButton").disabled = true;
       setNotice("");
+      const pendingUserId = `pending-user-${Date.now()}`;
+      const pendingAssistantId = `pending-assistant-${Date.now()}`;
+      appendPendingMessage("user", message, pendingUserId);
+      appendPendingMessage("model", "OLP AI đang xử lý...", pendingAssistantId);
+      input.value = "";
       try {
         const result = await api("/api/v1/chat", { method: "POST", body: JSON.stringify({ conversation_id: state.activeId, message }) });
-        input.value = "";
         renderConversation(result.conversation);
         await refreshConversations();
-      } catch (error) { setNotice(error.message); }
+      } catch (error) {
+        removePendingMessage(pendingUserId);
+        removePendingMessage(pendingAssistantId);
+        setNotice(error.message);
+      }
       finally { $("#sendButton").disabled = false; input.focus(); }
     });
 
@@ -286,16 +461,35 @@
       if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); $("#chatForm").requestSubmit(); }
     });
     $("#newChat").addEventListener("click", newConversation);
-    $("#clearChat").addEventListener("click", async () => {
-      if (!state.activeId || !confirm("Clear this conversation?")) return;
-      try { renderConversation(await api(`/api/v1/conversations/${state.activeId}/messages`, { method: "DELETE" })); await refreshConversations(); }
-      catch (error) { setNotice(error.message); }
-    });
-    $("#deleteChat").addEventListener("click", async () => {
-      if (!state.activeId || !confirm("Delete this conversation?")) return;
-      try { await api(`/api/v1/conversations/${state.activeId}`, { method: "DELETE" }); state.activeId = null; $("#conversationTitle").textContent = "New conversation"; $("#conversationId").textContent = "No conversation selected"; $("#messages").innerHTML = '<div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>'; $("#clearChat").disabled = true; $("#deleteChat").disabled = true; $("#tokenCount").textContent = `0 / ${state.budget}`; $("#meterFill").style.width = "0%"; await refreshConversations(); }
-      catch (error) { setNotice(error.message); }
-    });
+
+    async function clearConversation(id) {
+      closeConversationMenus();
+      if (!confirm("Clear this conversation?")) return;
+      try {
+        const conversation = await api(`/api/v1/conversations/${id}/messages`, { method: "DELETE" });
+        if (state.activeId === id) renderConversation(conversation);
+        await refreshConversations();
+      } catch (error) { setNotice(error.message); }
+    }
+
+    async function deleteConversation(id) {
+      closeConversationMenus();
+      if (!confirm("Delete this conversation?")) return;
+      try {
+        await api(`/api/v1/conversations/${id}`, { method: "DELETE" });
+        if (state.activeId === id) {
+          state.activeId = null;
+          $("#conversationTitle").textContent = "New conversation";
+          $("#conversationId").textContent = "No conversation selected";
+          $("#messages").innerHTML = '<div class="empty"><div><strong>OLP AI is ready</strong><span>Ask questions or get help solving and coding OLP AI problems.</span></div></div>';
+          $("#tokenCount").textContent = `0 / ${state.budget}`;
+          $("#meterFill").style.width = "0%";
+        }
+        await refreshConversations();
+      } catch (error) { setNotice(error.message); }
+    }
+
+    document.addEventListener("click", closeConversationMenus);
 
     $("#openSettings").addEventListener("click", (event) => { event.preventDefault(); $("#settingsDialog").showModal(); $("#settingsNotice").textContent = ""; });
     $("#closeSettings").addEventListener("click", () => $("#settingsDialog").close());

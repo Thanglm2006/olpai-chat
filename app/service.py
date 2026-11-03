@@ -114,7 +114,7 @@ class ChatService:
                         },
                     )
 
-                answer, _provider_input_tokens, output_tokens = self.gemini.generate(
+                answer, _provider_input_tokens, output_tokens, truncated = self.gemini.generate(
                     model_messages,
                     max_output_tokens=remaining - input_tokens,
                 )
@@ -141,15 +141,15 @@ class ChatService:
             with self.database.connection() as connection:
                 user_row = connection.execute(
                     """INSERT INTO messages
-                       (conversation_id, role, content, input_tokens, output_tokens, created_at)
-                       VALUES (?, 'user', ?, ?, 0, ?) RETURNING *""",
+                       (conversation_id, role, content, input_tokens, output_tokens, truncated, created_at)
+                       VALUES (?, 'user', ?, ?, 0, 0, ?) RETURNING *""",
                     (conversation_id, user_message, actual_input, now),
                 ).fetchone()
                 assistant_row = connection.execute(
                     """INSERT INTO messages
-                       (conversation_id, role, content, input_tokens, output_tokens, created_at)
-                       VALUES (?, 'model', ?, 0, ?, ?) RETURNING *""",
-                    (conversation_id, answer, output_tokens, now),
+                       (conversation_id, role, content, input_tokens, output_tokens, truncated, created_at)
+                       VALUES (?, 'model', ?, 0, ?, ?, ?) RETURNING *""",
+                    (conversation_id, answer, output_tokens, int(truncated), now),
                 ).fetchone()
                 connection.execute(
                     """UPDATE conversations SET

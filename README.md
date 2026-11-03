@@ -57,6 +57,8 @@ The API is then available at <http://127.0.0.1:8000>. SQLite data is stored in t
 
 When a conversation reaches its 2,000-token budget, the remaining output is capped to the available amount. If the next input itself cannot fit, the API returns `429` and does not write that message to the database. A different conversation has its own independent budget.
 
+If Gemini stops generation with `MAX_TOKENS`, the assistant message is saved with `truncated: true` and the frontend displays `Phản hồi đã bị cắt do hết token.`.
+
 The API key is stored in exactly one SQLite row (`api_keys.id = 1`). It is seeded from `.env` on first startup and can only be updated, never deleted. The update password is read from `API_KEY_UPDATE_PASSWORD` in `.env`; the response returns only a masked key.
 
 Update the key:

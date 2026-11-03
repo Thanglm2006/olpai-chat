@@ -50,6 +50,7 @@ class Database:
                     content TEXT NOT NULL,
                     input_tokens INTEGER NOT NULL DEFAULT 0,
                     output_tokens INTEGER NOT NULL DEFAULT 0,
+                    truncated INTEGER NOT NULL DEFAULT 0,
                     created_at TEXT NOT NULL
                 );
 
@@ -64,6 +65,14 @@ class Database:
                 );
                 """
             )
+            message_columns = {
+                row["name"]
+                for row in connection.execute("PRAGMA table_info(messages)").fetchall()
+            }
+            if "truncated" not in message_columns:
+                connection.execute(
+                    "ALTER TABLE messages ADD COLUMN truncated INTEGER NOT NULL DEFAULT 0"
+                )
             if seed_api_key:
                 now = utc_now()
                 connection.execute(

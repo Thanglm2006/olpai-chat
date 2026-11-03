@@ -29,6 +29,17 @@ class GeminiService:
             for item in messages
         ]
 
+    @staticmethod
+    def _was_truncated(response: Any) -> bool:
+        candidates = getattr(response, "candidates", None) or []
+        if not candidates:
+            return False
+        reason = getattr(candidates[0], "finish_reason", None)
+        if reason is None:
+            return False
+        value = getattr(reason, "value", reason)
+        return str(value).upper().endswith("MAX_TOKENS") or str(reason).upper().endswith("MAX_TOKENS")
+
     def count_input_tokens(self, messages: list[dict[str, Any]]) -> int:
         if not messages:
             return 0
@@ -43,7 +54,7 @@ class GeminiService:
         self,
         messages: list[dict[str, Any]],
         max_output_tokens: int,
-    ) -> tuple[str, int, int]:
+    ) -> tuple[str, int, int, bool]:
         client = self._get_client()
         response = client.models.generate_content(
             model=self.model,
@@ -68,5 +79,5 @@ class GeminiService:
             output_tokens = self.count_input_tokens(
                 [{"role": "model", "content": text}]
             )
-        return text, input_tokens, output_tokens
+        return text, input_tokens, output_tokens, self._was_truncated(response)
 

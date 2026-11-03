@@ -36,6 +36,7 @@ class MessageResponse(BaseModel):
     content: str
     input_tokens: int
     output_tokens: int
+    truncated: bool = False
     created_at: datetime
 
 
